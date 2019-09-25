@@ -1,0 +1,24 @@
+{
+  "name": "mc",
+  "version": "0.0.0",
+  "description": "Server at MC cluster",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/onichandame/mc.git"
+  },
+  "keywords": [
+    "express",
+    "node",
+    "rest"
+  ],
+  "author": "Xiao Zhang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/onichandame/mc/issues"
+  },
+  "homepage": "https://github.com/onichandame/mc#readme"
+}
