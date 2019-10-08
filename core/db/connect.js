@@ -1,30 +1,12 @@
-let {getConfig}=require(path.resolve(__dirname,'..','util','config.js'))
-let {exit}=require(path.resolve(__dirname,'..','util','base.js'))
+const path=require('path')
+const config=require(path.resolve(__dirname,'config.js'))
+const sqlite3=require('sqlite3').verbose()
 
-async function connect(callback){
-  getParam((dbparam)=>{
-    var connection=mysql.createConnection({
-      host:dbparam.host,
-      user:dbparam.user,
-      password:dbparam.password,
-      database:dbparam.database,
-      charset:'utf8mb4_general_ci'
-    })
-    connection.connect((err)=>{
-      if(err)
-        exit(err)
-      return callback(connection)
-    })
-  })
-}
-
-async function getParam(callback){
-  getConfig((param)=>{
-    const dbparam=param.db
-    if(!(dbparam.host&&dbparam.database&&dbparam.user&&dbparam.password))
-      exit('config file does not have enough database info')
-    else
-      callback(dbparam)
+function connect(){
+  return config()
+  .then((param)=>{
+    var db=new sqlite3.Database(p.name,sqlite3.OPEN_READWRITE|sqlite3.OPEN_CREATE,(err)=>{
+      return db
   })
 }
 

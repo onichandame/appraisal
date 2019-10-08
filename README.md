@@ -7,7 +7,7 @@ The system is designed for cloud computing.
 # Design
 The system acts as a bridge between TPS and MC.
 
-![struc](doc/struc.png)
+![struc](readme/struc.png)
 
 The 4 connections are based on HTTP protocol. Therefore it is natural to choose Express.js as the framework of the server.
 ## Data Flow
@@ -15,7 +15,7 @@ At present only the dataflow between TPS and Server is designed.
 
 The web resources and internal structure of the system is illustrated above. There are 3 types of endpoints open to TPS.
 
-![dataflow](doc/dataflow.png)
+![dataflow](readme/dataflow.png)
 
 The dataflow is shown above. Step 1, 2 and 3 are conducted using HTTP POST/GET methods.
 
