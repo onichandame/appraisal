@@ -1,5 +1,6 @@
 const path=require('path')
 const fs=require('fs')
+const fsp=fs.promises
 const initDB=require(path.resolve(__dirname,'db','init.js'))
 const initLog=require(path.resolve(__dirname,'logger','init.js'))
 
@@ -13,23 +14,44 @@ function init(){
   global.basedir=findBaseDir()
 
   return initDB()
-  .then(()=>{return initLog()})
-  .then(()=>{return initDoc()})
-  .catch((err)=>{
-    console.log(err)
-    process.exit(1)
-  })
+  .then(initLog)
+  .then(initDoc)
+  .catch(e=>{exit(e)})
 }
 
 function initDoc(){
-  return new Promise((resolve,reject)=>{
-    fs.access(path.resolve(__dirname,'doc'),(err)=>{
-      if(err)
-        exit('Failed to ')
-      fs.stat(path.resolve(__dirname,'doc'),(err,stat)=>{
+  const rootpath=path.resolve(__dirname,'asset')
+  const uppath=path.resolve(rootpath,'upload')
+  const downpath=path.resolve(rootpath,'downpath')
+
+  return checkPath(rootpath)
+  .then(checkPath(uppath))
+  .then(checkPath(downpath))
+
+  function checkPath(p){
+    return exists()
+    .then(isDir)
+
+    function exists(){
+      return fsp.access(p,fs.constants.R_OK | fs.constants.W_OK)
+      .catch(e=>{
+        if(e.code=='ENOENT')
+          return fsp.mkdir(p)
+        else
+          throw e
       })
-    })
-  })
+    }
+
+    function isDir(){
+      return fsp.stat(p)
+      .then(stat=>{
+        if(stat.isDirectory())
+          return
+        else 
+          throw new Error('doc not directory')
+      })
+    }
+  }
 }
 
 function findBaseDir(){

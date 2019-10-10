@@ -9,8 +9,8 @@ const dft={
 function config(){
   return get()
   .then((c)=>{
-    const param=c.db
-    if(!(param&&param.path&&param.name))
+    const p=c.db
+    if(!(p&&p.path&&p.name))
       global.config.db=dft
     return global.config.db
   })

@@ -1,8 +1,5 @@
 let path=require('path')
 let connect=require(path.resolve(__dirname,'connect.js'))
-let {exit}=require(path.resolve(__dirname,'..','util','base.js'))
-
-let tabname=require(path.resolve(__dirname,'tabname.js'))
 
 async function insert(obj,callback){
   connect((connection)=>{
