@@ -60,7 +60,9 @@ function findBaseDir(){
   let curdir=__dirname
   var result=false
   try{
-    while(!result){
+    let i=0
+    while(!result&&i<5){
+      ++i
       let flag=true
       files.forEach((file)=>{
         const filename=path.resolve(curdir,file)
@@ -77,7 +79,6 @@ function findBaseDir(){
       else
         result=curdir
     }
-    return result
   }catch(e){
     console.log(e)
     process.exit(1)

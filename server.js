@@ -13,10 +13,15 @@ app.use(cookieparser())
 
 init()
 .then(()=>{
+
   app.use('/newjob',require(path.resolve(__dirname,'core','newjob','main.js')))
+
   app.use('/monitor',require(path.resolve(__dirname,'core','monitor','main.js')))
+
   app.use(/\/\d+/,require(path.resolve(__dirname,'core','download','main.js')))
-  app.listen(port, function (){
+
+  app.listen(port, ()=>{
     console.log('Listening on port '+port+'!')
   })
+
 })
