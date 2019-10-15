@@ -8,10 +8,11 @@ const dft={
 
 function config(){
   return get()
-  .then((c)=>{
-    const p=c.db
-    if(!(p&&p.path&&p.name))
+  .then(c=>{
+    if(!(c&&c.db&&c.db.path&&c.db.name))
       global.config.db=dft
     return global.config.db
   })
 }
+
+module.exports=config

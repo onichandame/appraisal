@@ -47,6 +47,26 @@ When the status of a job shows that it can be downloaded, an endpoint for the jo
   The file is kept for at most 14 days from the moment of its creation. After its deletion, the status of the job is changed accordingly.
 
 ## Security
-The system communicates across internet therefore the security is an issue.
+The system communicates across internet therefore the security is an issue. The basic authorisation&authentication process requires management of user and resource. Here is the definition:
+- **User:** people use/manage resources
+- **Resource:** endpoints on this site
 
-The basic idea is the combination of TLS and OAuth2, which will be implemented in future versioins.
+### User
+According to the use cases, user is divided into 2 levels, each with different permissions
+1. Administrator of the website&HPC
+2. Entities using the resources
+
+The administrator has full control over the website and HPC. The common users have access to the calculation resources.
+
+### Resource
+Described in previous section
+
+### Workflow
+
+The authorisation process:
+
+![authorise](readme/authorise.png)
+
+The registration process:
+
+![newclient](readme/newclient.png)

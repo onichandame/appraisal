@@ -17,9 +17,9 @@ function addtable(schema){
     return `CREATE TABLE IF NOT EXISTS ${schema.name} ${getkv()}`
   }
   if(!(schema&&schema.name&&schema.cols))
-    return Promise.reject('Requires table name and cols, received '+JSON.stringify(schema))
+    return Promise.reject(new Error('Requires table name and cols, received '+JSON.stringify(schema)))
   return connect()
-  .then((db)=>{
+  .then(db=>{
     return db.run(getsql())
   })
 }

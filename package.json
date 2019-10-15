@@ -4,7 +4,7 @@
   "description": "Server at MC cluster",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js --ignore 'db/' --ignore 'asset/'"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,10 @@
   "dependencies": {
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
+    "formidable": "^1.2.1",
     "nodemon": "^1.19.2",
-    "sqlite": "^3.0.3"
+    "pug": "^2.0.4",
+    "sqlite": "^3.0.3",
+    "zlib": "^1.0.5"
   }
 }

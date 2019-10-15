@@ -4,9 +4,9 @@ const sqlite=require('sqlite')
 
 function connect(){
   return config()
-  .then(async (p)=>{
+  .then(p=>{
     const db=sqlite.open(path.resolve(p.path,p.name),{Promise})
-    return await db
+    return db
   })
 }
 
