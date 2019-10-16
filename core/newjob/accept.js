@@ -22,122 +22,108 @@ const compressFile=require(path.resolve(global.basedir,'core','util','compressFi
  * 4: database error
  */
 module.exports=function(req,res,next){
-  return checkRequest()
+  return parsePost()
+  .then(checkRequest)
   .then(saveFile)
   .then(finalize)
   .catch(handleError)
+  .then(reply)
 
-  function checkRequest(){
-    if(!(req.body&&req.body.engine))
+  function parsePost(){
+    return new Promise((resolve,reject)=>{
+      let form=new formidable.IncomingForm()
+      form.uploadDir=global.inputpath
+      form.parse(req,(err,fields,files)=>{
+        if(err)
+          return reject(1)
+        return resolve({fields:fields,files:files})
+      })
+    })
+  }
+
+  function checkRequest(form){
+    const {fields,files}=form
+    if(!(fields&&fields.engine))
       return Promise.reject(1)
-    const supported_engine=[0,1,2]
-    let engine=-1
-    switch(req.body.engine.toLowerCase()){
-      case 'mcnp6.1':
-        engine=0
-        break
-      case 'phits':
-        engine=1
-        break
-      case 'mc4nbp':
-        engine=2
-        break
-      default:
-        engine=-1
-    }
-    if(supported_engine.indexOf(engine)<0){
+    const supported_engine=['mcnp6.1','phits','mc4nbp']
+    let engine=fields.engine
+    if(supported_engine.indexOf(engine)<0)
       return Promise.reject(1)
-    }
-    return Promise.resolve()
+    else
+      engine=supported_engine.indexOf(engine)
+    return Promise.resolve({files:files,engine:engine})
   }
   
-  function saveFile(){
-    return new Promise((resolve,reject)=>{
-      var form=new formidable.IncomingForm()
-      form.parse(req)
-      form.on('fileBegin',(name,file)=>{
-        console.log('started')
-        file.path=global.inputpath
-      })
-      form.on('progress',(cur,tot)=>{
-        console.log(cur/total*100+'%')
-      })
-      form.on('end',(name,file)=>{
-        return resolve(name)
-        console.log('done')
-      })
-      form.on('error',e=>{
-        return reject(2)
-      })
-    })
-  }
-
-  function finalize(name){
-    if(!name)
-      return Promise.reject(2)
-    return insert('TableTask',{
-      submited_at:new Date().getTime(),
-      status:4,
-      engine:engine,
-      original_name:path.parse(name).name
-    })
-    .then(alloc)
+  function saveFile(fe){
+    const {files,engine}=fe
+    if(!(files&&files.input))
+      return Promise.reject(1)
+    return register()
+    .then(rename)
     .then(compress)
-    .then(reply)
 
-    function alloc(r){
-      const id=r.lastID
-      if(id<0)
-        return Promise.reject(4)
-      const filepath=path.resolve(global.inputpath,id)
-      fsp.access(filepath)
-      .then(()=>{fsp.unlink(filepath)})
-      .then(rename)
-      .catch(rename)
-
-      function rename(){
-        return fsp.rename(path.resolve(global.inputpath,name),filepath)
-        .then(()=>{return id})
-      }
+    function register(){
+      return insert('TableTask',{
+        submited_at:new Date().getTime(),
+        status:4,
+        engine:engine,
+        original_name:path.parse(files.input.name).name
+      })
     }
 
-    function compress(id){
-      return compressFile(path.resolve(global.inputpath,id))
+    function rename(sql){
+      const id=sql.stmt.lastID
+      if(!(id&&id>=0))
+        return Promise.reject(4)
+      return fsp.rename(files.input.path,path.resolve(global.inputpath,id.toString()))
       .then(()=>{return id})
     }
 
-    function reply(id){
-      console.log(id)
-      res.body=id
-      return next()
+    function compress(id){
+      return compressFile(path.resolve(global.inputpath,id.toString()))
+      .then(()=>{return id})
     }
+  }
+
+  function finalize(id){
+    res.body=id.toString()
+    return Promise.resolve()
   }
 
   function handleError(e){
     switch(e){
       case 0:
         return logger.debug('received job but error thrown')
-        .then(next)
+        .then(()=>{return 0})
         break
       case 1:
-        return logger.debug(`received unsupported request of ${req.body.engine}`)
-        .then(()=>{return next(400)})
+        return logger.debug(`received request of unsupported engine`)
+        .then(()=>{return 400})
         break
       case 2:
         return logger.debug(`received request but not file`)
-        .then(()=>{return next(400)})
+        .then(()=>{return 400})
         break
       case 3:
         return logger.info('received request but invalid file')
-        .then(()=>{return next(422)})
+        .then(()=>{return 422})
         break
       case 4:
         return logger.warn(`error during handling request ${JSON.stringify(e)}`)
-        .then(()=>{return next(500)})
+        .then(()=>{return 500})
         break
       default:
         return logger.warn(`error during handling request ${JSON.stringify(e)}`)
-        .then(()=>{return next(500)})
+        .then(()=>{return 500})
     }
+  }
+
+  function reply(code){
+    if(!code)
+      res.status(200)
+    if(res.body)
+      return Promise.resolve(res.send(res.body))
+    else
+      return Promise.resolve(res.send())
   }
 }

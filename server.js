@@ -1,7 +1,6 @@
 const path=require('path')
 const express = require('express')
 const cookieparser=require('cookie-parser')
-const bodyparser=require('body-parser')
 const init=require(path.resolve(__dirname,'core','init.js'))
 
 const app = express()
@@ -16,8 +15,6 @@ init()
 
 function mount(){
   app.use(express.static(path.resolve(__dirname,'public')))
-  app.use(bodyparser.json())
-  app.use(bodyparser.urlencoded())
   app.use(cookieparser())
    
   app.use('/newjob',require(path.resolve(__dirname,'core','newjob','main.js')))
