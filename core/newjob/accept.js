@@ -51,7 +51,7 @@ module.exports=function(req,res,next){
       return Promise.reject(1)
     else
       engine=supported_engine.indexOf(engine)
-    return Promise.resolve({files:files,engine:engine})
+    return Promise.resolve({id:fields.id,files:files,engine:engine})
   }
   
   function saveFile(fe){
@@ -81,12 +81,14 @@ module.exports=function(req,res,next){
 
     function compress(id){
       return compressFile(path.resolve(global.inputpath,id.toString()))
-      .then(()=>{return id})
+      .then(()=>{return {new:id,old:fe.id}})
     }
   }
 
-  function finalize(id){
-    res.body=id.toString()
+  function finalize(ids){
+    if(!ids.old)
+      ids.old=''
+    res.body=ids.toString()
     return Promise.resolve()
   }
 
