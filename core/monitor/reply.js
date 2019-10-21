@@ -64,5 +64,7 @@ module.exports=function(req,res,next){
     res.status(code)
     if(res.body)
       return Promise.resolve(res.send(res.body))
+    else
+      return Promise.resolve(res.send())
   }
 }
