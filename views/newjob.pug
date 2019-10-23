@@ -8,8 +8,11 @@ block form
       option(value="phits") phits
       option(value="mc4nbp") mc4nbp
     div(class="invalid-feedback") Please select one engine
+  div(class="form-group")
+    input(type="text",name="id",id="id",class="form-control",required)
+    div(class="invalid-feedback") Choose a file
   div(class="custom-file")
-    input(type="file",name="input",id="file",class="custom-file-input",required)
+    input(type="file",name="file",id="file",class="custom-file-input",required)
     label(class="custom-file-label",for="file") Choose file
     div(class="invalid-feedback") Choose a file
     script.

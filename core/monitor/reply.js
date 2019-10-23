@@ -35,7 +35,7 @@ module.exports=function(req,res,next){
   }
 
   function retrieveData(ids){
-    return select('TableTask',['submited_at','status','engine','started_at','finished_at','est','rowid AS id'],`rowid in (${keys()})`)
+    return select('TableTask',['submitted_at','status','engine','started_at','finished_at','est','rowid AS id'],`rowid in (${keys()})`)
 
     function keys(){
       var key=''
