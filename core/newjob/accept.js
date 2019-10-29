@@ -2,7 +2,7 @@
  * Requires:
  * 1. file(FILE)
  * 2. engine(TEXT)
- * 3. sid(cookies) implemented in future
+ * 3. id(INT)
  * Returns:
  * 1. ID(INT)
  */
@@ -14,9 +14,7 @@ const formidable=require('formidable')
 const logger=require(path.resolve(global.basedir,'core','logger','logger.js'))
 const compressFile=require(path.resolve(global.basedir,'core','util','compressFile.js'))
 
-/* Error code:
- * 0: no error
- * 1: bad request(not file)
+/* 1: bad request(not file)
  * 2: input not received
  * 3: input invalid
  * 4: database error
@@ -43,24 +41,25 @@ module.exports=function(req,res,next){
 
   function checkRequest(form){
     const {fields,files}=form
-    if(!(fields&&fields.engine))
-      return Promise.reject(1)
+    if(!(fields && fields.engine && fields.id)) return Promise.reject(1)
     const supported_engine=['mcnp6.1','phits','mc4nbp']
     let engine=fields.engine
-    if(supported_engine.indexOf(engine)<0)
-      return Promise.reject(1)
-    else
-      engine=supported_engine.indexOf(engine)
+    if(supported_engine.indexOf(engine)<0) return Promise.reject(1)
+    else engine=supported_engine.indexOf(engine)
     return Promise.resolve({id:fields.id,files:files,engine:engine})
   }
   
   function saveFile(fe){
-    const {files,engine}=fe
-    if(!(files&&files.input))
-      return Promise.reject(1)
+    const {id,files,engine}=fe
+
+    if(!(files&&files.input)) return Promise.reject(1)
+
     return register()
     .then(rename)
-    .then(compress)
+    //.then(compress)
+    .then(newid=>{
+      return {new:newid,old:id}
+    })
 
     function register(){
       return insert('TableTask',{
@@ -71,60 +70,57 @@ module.exports=function(req,res,next){
       })
     }
 
-    function rename(sql){
-      const id=sql.stmt.lastID
-      if(!(id&&id>=0))
-        return Promise.reject(4)
-      return fsp.rename(files.input.path,path.resolve(global.inputpath,id.toString()))
-      .then(()=>{return id})
+    function rename(lastid){
+      if(!(lastid && lastid>=0)) return Promise.reject(4)
+      return fsp.rename(files.input.path,path.resolve(global.inputpath,lastid.toString()))
+      .then(()=>{return lastid})
     }
 
+    /*
     function compress(id){
       return compressFile(path.resolve(global.inputpath,id.toString()))
       .then(()=>{return {new:id,old:fe.id}})
     }
+    */
   }
 
   function finalize(ids){
+    res.status(200)
     if(!ids.old)
       ids.old=''
-    res.body=ids.toString()
+    res.body=ids
     return Promise.resolve()
   }
 
   function handleError(e){
     switch(e){
-      case 0:
-        return logger.debug('received job but error thrown')
-        .then(()=>{return 0})
-        break
       case 1:
-        return logger.debug(`received request of unsupported engine`)
-        .then(()=>{return 400})
+        return logger.debug('Request invalid')
+        .then(()=>{res.status(400)})
         break
       case 2:
-        return logger.debug(`received request but not file`)
-        .then(()=>{return 400})
+        return logger.debug('No file received')
+        .then(()=>{res.status(400)})
         break
       case 3:
-        return logger.info('received request but invalid file')
-        .then(()=>{return 422})
+        return logger.info('File invalid')
+        .then(()=>{res.status(422)})
         break
       case 4:
-        return logger.warn(`error during handling request ${JSON.stringify(e)}`)
-        .then(()=>{return 500})
+        return logger.warn(`Server internal error during handling request ${JSON.stringify(e)}`)
+        .then(()=>{res.status(500)})
         break
       default:
-        return logger.warn(`error during handling request ${JSON.stringify(e)}`)
-        .then(()=>{return 500})
+        return logger.warn(`Server internal error during handling request ${JSON.stringify(e)}`)
+        .then(()=>{res.status(500)})
     }
   }
 
-  function reply(code){
-    if(!code)
-      res.status(200)
+  function reply(){
+    console.log(res.body)
+    if(!res.statusCode) res.status(500)
     if(res.body)
-      return Promise.resolve(res.send(res.body))
+      return Promise.resolve(res.send(JSON.stringify(res.body)))
     else
       return Promise.resolve(res.send())
   }

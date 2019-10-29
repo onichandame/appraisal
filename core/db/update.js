@@ -17,6 +17,9 @@ function update(tbl,row,cond){
     if(!(tbl&&row))
       return Promise.reject(new Error(`Requires table name and fields, received ${JSON.stringify(tbl)} and ${JSON.stringify(row)} and ${JSON.stringify(cond)}`))
     return db.run(getsql())
+    .then(sql=>{
+      return sql.stmt.changes
+    })
   })
 }
 

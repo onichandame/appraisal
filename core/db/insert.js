@@ -23,6 +23,9 @@ function insert(tbl,obj){
     if(!(tbl&&obj))
       return Promise.reject(new Error('Require table name and a row, '+'received '+JSON.stringify(tbl)+' and '+JSON.stringify(obj)))
     return db.run(getsql())
+    .then(sql=>{
+      return sql.stmt.lastID
+    })
   })
 }
 
