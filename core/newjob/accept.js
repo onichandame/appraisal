@@ -117,7 +117,6 @@ module.exports=function(req,res,next){
   }
 
   function reply(){
-    console.log(res.body)
     if(!res.statusCode) res.status(500)
     if(res.body)
       return Promise.resolve(res.send(JSON.stringify(res.body)))

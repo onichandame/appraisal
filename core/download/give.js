@@ -1,18 +1,11 @@
-/* Requires:
- * /\d+ id
- * 
- * Returns:
- * File
- */
-let path=require('path')
+const path=require('path')
 const select=require(path.resolve(global.basedir,'core','db','select.js'))
 const update=require(path.resolve(global.basedir,'core','db','update.js'))
 const logger=require(path.resolve(global.basedir,'core','logger','logger.js'))
 const fs=require('fs')
 const fsp=fs.promises
 
-/* 0/null: finished processing no error
- * 1: request invalid
+/* 1: request invalid
  * 2: not found
  * 3: internal error
  */
