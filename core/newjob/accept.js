@@ -63,7 +63,7 @@ module.exports=function(req,res,next){
 
     function register(){
       return insert('TableTask',{
-        submited_at:new Date().getTime(),
+        submitted_at:new Date().getTime(),
         status:4,
         engine:engine,
         original_name:path.parse(files.input.name).name
