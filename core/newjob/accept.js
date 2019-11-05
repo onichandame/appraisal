@@ -30,6 +30,7 @@ module.exports=function(req,res,next){
   function parsePost(){
     return new Promise((resolve,reject)=>{
       let form=new formidable.IncomingForm()
+      form.maxFileSize=1024 * 1024 * 1024 * 5
       form.uploadDir=global.inputpath
       form.parse(req,(err,fields,files)=>{
         if(err)

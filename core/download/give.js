@@ -24,47 +24,43 @@ module.exports=function(req,res,next){
   }
 
   function getFile(id){
-    return fsp.access(path.resolve(global.outputpath,id))
+    return fsp.access(path.resolve(global.outputpath,id), fs.constants.F_OK | fs.constants.R_OK)
     .then(()=>{return id})
     .catch(e=>{
-      if(e.code=='ENOENT')
-        return Promise.reject(2)
+      return Promise.reject(2)
     })
   }
 
   function getName(id){
     return select('TableTask',['original_name','status','finished_at'],'rowid='+id)
     .then(rows=>{
-      if(!rows.length||rows.length>1)
-        return Promise.reject(404)
+      if(rows.length!=1)
+        return Promise.reject(2)
       res.name=rows[0].original_name+'.m' || id+'.m'
       res.id=id
-      return
     })
   }
 
   function handleError(e){
     switch(e){
-      case 0:
-        return logger.debug('received invalid request')
-        .then(()=>{return 400})
-        break
       case 1:
-        return logger.debug('file not found')
-        .then(()=>{return 404})
+        res.status(400)
+        break
+      case 2:
+        res.status(404)
         break
       default:
-        return logger.warn(`internal failure ${JSON.stringify(e)}`)
+        res.status(500)
+        break
     }
+    return Promise.resolve()
   }
 
-  function reply(code){
-    if(!code)
-      code=200
-    res.status(code)
-    if(code==200&&res.name&&res.id)
-      return Promise.resolve(res.download(path.resolve(global.outputpath,res.id),res.name))
-    else
-      return Promise.resolve(res.send())
+  function reply(){
+    if(!res.statusCode)
+      res.status(500)
+    if(res.name && res.id) res.download(path.resolve(global.outputpath,res.id),res.name)
+    else res.send()
+    return Promise.resolve(res)
   }
 }

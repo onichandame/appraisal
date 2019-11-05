@@ -12,10 +12,10 @@ const schema={
     status:'INT NOT NULL',// 0: finished & ready; 1: finished & post-processing; 2: calculating; 3: in queue; 4: not started; -1: failed
     engine:'INT NOT NULL',// 0: MCNP6.1; 1: PHITS; 2: MC4NBP
 //    client:'INT NOT NULL', //will implement in future
-    started_at:'TEXT',
-    finished_at:'TEXT',
+    started_at:'INT',
+    finished_at:'INT',
     original_name:'TEXT',
-    est:'TEXT'
+    est:'INT'
   }
 }
 
