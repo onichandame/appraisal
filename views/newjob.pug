@@ -9,16 +9,16 @@ block form
       option(value="mc4nbp") mc4nbp
     div(class="invalid-feedback") Please select one engine
   div(class="form-group")
-    input(type="text",name="id",id="id",class="form-control",required)
-    div(class="invalid-feedback") Choose a file
+    input(type="text",name="id",id="id",class="form-control",placeholder="id",required)
+    div(class="invalid-feedback") Enter id
   div(class="custom-file")
-    input(type="file",name="file",id="file",class="custom-file-input",required)
-    label(class="custom-file-label",for="file") Choose file
+    input(type="file",name="input",id="input",class="custom-file-input",required)
+    label(class="custom-file-label",for="input") Choose file
     div(class="invalid-feedback") Choose a file
     script.
       $('#file').on('change',function(){
         var filename=$(this).val().split('\\').pop()
-        $(this).siblings('#file~.custom-file-label').addClass('selected').html(filename)
+        $(this).siblings('#input~.custom-file-label').addClass('selected').html(filename)
       })
   div(class="form-group justify-content-center")
     button(id="submit",type="submit",class="col-xs-10 col-md-6 col-lg-3 btn btn-primary col center-block",style="font-size:1.5rem;") Submit
