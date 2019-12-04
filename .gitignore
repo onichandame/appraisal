@@ -3,3 +3,4 @@ node_modules/
 /db
 /asset/
 *.sw*
+fort*
