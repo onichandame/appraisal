@@ -8,10 +8,12 @@ module.exports=async function(){
 
   const select=require(path.resolve(__dirname,'db','select.js'))
   const update=require(path.resolve(__dirname,'db','update.js'))
-
+/*
   while(true){
     await calc()
   }
+  */
+  setInterval(async ()=>{await calc()}, 3000)
 
   async function calc(){
 

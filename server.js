@@ -7,7 +7,7 @@ const app = express()
 app.set('views','views')
 app.set('view engine','pug')
 
-const port=8080
+const port=10000
 
 init()
 .then(mount)
