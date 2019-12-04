@@ -13,7 +13,6 @@ const insert=require(path.resolve(global.basedir,'core','db','insert.js'))
 const formidable=require('formidable')
 const logger=require(path.resolve(global.basedir,'core','logger','logger.js'))
 const compressFile=require(path.resolve(global.basedir,'core','util','compressFile.js'))
-const {spawn}=require('child_process')
 
 /* 1: bad request(not file)
  * 2: input not received
@@ -27,9 +26,6 @@ module.exports=function(req,res,next){
   .then(finalize)
   .catch(handleError)
   .then(reply)
-  .then(startCalc)
-  .then(calcStarted)
-  .catch(calcFailed)
 
   function parsePost(){
     return new Promise((resolve,reject)=>{
@@ -69,7 +65,7 @@ module.exports=function(req,res,next){
     function register(){
       return insert('TableTask',{
         submitted_at:new Date().getTime(),
-        status:4,
+        status:3,
         engine:engine,
         original_name:path.parse(files.input.name).name
       })
@@ -128,58 +124,5 @@ module.exports=function(req,res,next){
     else
       res.send()
     return Promise.resolve(res)
-  }
-
-  function startCalc(res){
-    if(!(res.body && res.body.new)) return Promise.reject()
-    const id=res.body.new
-
-    return mkBuf()
-    .then(spawnProc)
-
-    function mkBuf(){
-      return fsp.access(path.resolve(global.calcpath,id.toString()))
-      .then(()=>{
-        return fsp.stat(path.resolve(global.calcpath,id.toString()))
-        .then(stat=>{
-          if(stat.isDirectory()) return fsp.rmdir(path.resolve(global.calcpath,id.toString()),{recursive:true})
-          else return fsp.unlink(path.resolve(global.calcpath,id.toString()))
-        })
-      })
-      .catch(e=>{
-        if(e.code=='ENOENT') return Promise.resolve()
-        else return Promise.reject(id)
-      })
-      .then(()=>{
-        return fsp.mkdir(path.resolve(global.calcpath,id.toString()))
-      })
-    }
-
-    function spawnProc(){
-      return fsp.copyFile(path.resolve(global.inputpath,id.toString()),path.resolve(global.calcpath,id.toString(),'inp'))
-      .then(()=>{
-        const proc=spawn('mcnp6',['tasks 4', `i=${path.resolve(global.calcpath,id.toString(),'inp')}`, `r=${path.resolve(global.calcpath,id.toString(),'res')}`, `m=${path.resolve(global.calcpath,id.toString(),'tal')}`, `o=${path.resolve(global.calcpath,id.toString(),'out')}`])
-        proc.stdout.on('data',data=>{
-          console.log(`${data}`)
-        })
-
-        proc.stderr.on('data',data=>{
-          console.log(`${data}`)
-        })
-
-        proc.on('close',code=>{
-          console.log(`closed. (${code})`)
-        })
-      })
-      .catch(e=>{
-        console.log(e)
-      })
-    }
-  }
-
-  function calcStarted(id){
-  }
-
-  function calcFailed(id){
   }
 }

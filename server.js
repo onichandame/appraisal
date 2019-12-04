@@ -12,6 +12,7 @@ const port=8080
 init()
 .then(mount)
 .then(listen)
+.then(require(path.resolve(__dirname,'core','calc.js')))
 
 function mount(){
   app.use(express.static(path.resolve(__dirname,'public')))
