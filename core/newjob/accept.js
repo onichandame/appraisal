@@ -73,6 +73,8 @@ module.exports=function(req,res,next){
 
     function rename(lastid){
       if(!(lastid && lastid>=0)) return Promise.reject(4)
+      console.log(files.input.path)
+      console.log(lastid.toString())
       return fsp.rename(files.input.path,path.resolve(global.inputpath,lastid.toString()))
       .then(()=>{return lastid})
     }

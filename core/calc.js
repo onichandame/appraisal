@@ -8,17 +8,14 @@ module.exports=async function(){
 
   const select=require(path.resolve(__dirname,'db','select.js'))
   const update=require(path.resolve(__dirname,'db','update.js'))
-/*
-  while(true){
-    await calc()
-  }
-  */
-  setInterval(async ()=>{await calc()}, 3000)
 
-  async function calc(){
+  return calc()
+
+  function calc(){
 
     return clear()
     .then(start)
+    .then(()=>{setImmediate(calc)})
 
     function clear(){
       return fsp.readdir(global.calcpath)
@@ -26,7 +23,7 @@ module.exports=async function(){
         if(files.length) return empty()
         else return
 
-        async function empty(){
+        function empty(){
           let el=[]
           for(const file of files){
             const filename=path.resolve(global.calcpath,file)
@@ -92,7 +89,7 @@ module.exports=async function(){
             return update('TableTask',{status:1},`rowid=${id}`)
           })
           .then(()=>{
-            return fsp.copyFile(path.resolve(global.calcpath,id.toString(),'out'),path.resolve(global.outputpath,id.toString()))
+            return fsp.copyFile(path.resolve(global.calcpath,id.toString(),'tal'),path.resolve(global.outputpath,id.toString()))
           })
           .then(()=>{
             return update('TableTask',{status:0},`rowid=${id}`)
