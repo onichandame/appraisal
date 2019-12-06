@@ -16,7 +16,7 @@ block form
     label(class="custom-file-label",for="input") Choose file
     div(class="invalid-feedback") Choose a file
     script.
-      $('#file').on('change',function(){
+      $('#input').on('change',function(){
         var filename=$(this).val().split('\\').pop()
         $(this).siblings('#input~.custom-file-label').addClass('selected').html(filename)
       })
