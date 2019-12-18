@@ -15,6 +15,7 @@ module.exports=async function(){
 
     return clear()
     .then(start)
+    .then(clean)
     .then(()=>{setImmediate(calc)})
 
     function clear(){
@@ -86,7 +87,7 @@ module.exports=async function(){
             })
           })
           .then(()=>{
-            return update('TableTask',{status:1},`rowid=${id}`)
+            return update('TableTask',{status:1,finished_at:new Date().getTime()/1000},`rowid=${id}`)
           })
           .then(()=>{
             return fsp.copyFile(path.resolve(global.calcpath,id.toString(),'tal'),path.resolve(global.outputpath,id.toString()))
@@ -98,6 +99,18 @@ module.exports=async function(){
             console.log(e)
           })
         }
+      })
+    }
+    
+    function clean(){
+      return fsp.readdir(global.basedir)
+      .then(files=>{
+        let temp_files=[]
+        files.forEach(f=>{
+          if(/^fort[a-zA-Z0-9]{5}$/.test(f))
+            temp_files.push(fsp.unlink(path.join(global.basedir,f)))
+        })
+        return Promise.all(temp_files)
       })
     }
   }

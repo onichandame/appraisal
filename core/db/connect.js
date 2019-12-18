@@ -10,6 +10,9 @@ function connect(){
     if(!db) db=sqlite.open(path.resolve(p.path,p.name),{Promise})
     return db
   })
+  .catch(e=>{
+    console.log(e)
+  })
 }
 
 module.exports=connect

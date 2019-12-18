@@ -1,7 +1,6 @@
 let path=require('path')
 const fs=require('fs')
 const fsp=fs.promises
-let connect=require(path.resolve(__dirname,'connect.js'))
 const addtable=require(path.resolve(global.basedir,'core','db','addtable.js'))
 const config=require(path.resolve(__dirname,'config.js'))
 

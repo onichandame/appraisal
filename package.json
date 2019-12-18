@@ -25,7 +25,7 @@
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
     "formidable": "^1.2.1",
-    "nodemon": "^1.19.2",
+    "nodemon": "^1.19.4",
     "pug": "^2.0.4",
     "rimraf": "^3.0.0",
     "sqlite": "^3.0.3",
