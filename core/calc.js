@@ -64,7 +64,7 @@ module.exports=async function(){
         }
 
         function register(){
-          return update('TableTask',{status:2,started_at:new Date().getTime()/1000},`rowid=${id}`)
+          return update('TableTask',{status:2,started_at:new Date().getTime()},`rowid=${id}`)
         }
 
         function spawn(){
@@ -87,7 +87,7 @@ module.exports=async function(){
             })
           })
           .then(()=>{
-            return update('TableTask',{status:1,finished_at:new Date().getTime()/1000},`rowid=${id}`)
+            return update('TableTask',{status:1,finished_at:new Date().getTime()},`rowid=${id}`)
           })
           .then(()=>{
             return fsp.copyFile(path.resolve(global.calcpath,id.toString(),'tal'),path.resolve(global.outputpath,id.toString()))
