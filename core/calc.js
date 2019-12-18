@@ -64,7 +64,7 @@ module.exports=async function(){
         }
 
         function register(){
-          return update('TableTask',{status:2},`rowid=${id}`)
+          return update('TableTask',{status:2,started_at:new Date().getTime()/1000},`rowid=${id}`)
         }
 
         function spawn(){
