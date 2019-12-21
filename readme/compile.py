@@ -7,7 +7,7 @@ subprocess.run(command.split())
 import os
 _cwd_=os.getcwd()
 if os.path.isfile('main.pdf'):
-    command='mv '+os.path.join(_cwd_,'main.pdf')+' '+os.path.join(_cwd_,os.path.basename(_cwd_)+'.pdf')
+    command='mv '+os.path.join(_cwd_,'main.pdf')+' '+os.path.join(_cwd_,'..',os.path.basename(_cwd_)+'.pdf')
     subprocess.run(command.split())
-command ='latexmk -c'
+command ='latexmk -C'
 subprocess.run(command.split())
