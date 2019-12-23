@@ -16,6 +16,7 @@
 \usepackage{tikz}
   \newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
   \newcommand{\RomanNumeralCaps}[1]{\MakeUppercase{\romannumeral #1}}
+\usepackage{multicol}
 
 \begin{document}
 \songti
@@ -50,6 +51,25 @@ $C_i=\frac{W_i}{S_i}$为总工作量，$N$为考核项目数量，$W_i$为考核
 \section{工作量计算标准}
 猜测：每种考核方向的比重相同，以恰好完成基准工作量为1，如必要项未完成，为0；如非必要项未完成，按比例扣分；如超标完成，按比例加分。\par
 完成每种考核后按\autoref{eq:main}计算总分。\par
+\section{输入表格}
+所有信息都以表格形式输入，包括以下表格：
+\begin{multicols}{2}
+  \begin{itemize}
+    \item 被考核人
+      \begin{itemize}
+        \item 姓名
+        \item 工号
+        \item 岗位性质
+        \item 等级
+        \item 聘期起始日
+        \item 聘期结束日
+      \end{itemize}
+    \item 本科课程
+    \item 研究生课程
+    \item 书籍出版
+    \item 论文出版
+  \end{itemize}
+\end{multicols}
 以下是对输入数据和算法的疑问。
 \begin{enumerate}
   \item 有些表格只有姓名没有工号，为防止重名，建议在每个输入表格中加入工号一栏。如已采用其它处理重名的手段，请告知。
