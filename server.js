@@ -17,6 +17,13 @@ function mount(){
   app.use(express.static(path.resolve(__dirname,'public')))
   app.use(cookieparser())
    
+  app.use('/template',(req,res)=>{
+    res.download(path.resolve(__dirname,'template.xlsx'))
+  })
+
+  app.use('/readme',(req,res)=>{
+    res.download(path.resolve(__dirname,'readme.pdf'))
+  })
   app.use('/',require(path.resolve(__dirname,'core','main.js')))
 
   return Promise.resolve()

@@ -437,8 +437,13 @@ module.exports=function(req,res,next){
                     inc_stack+=tmp
                   }
                   mark+=weight * inc_stack/income_base
+                  let teach_award=0
                   const paper_base=1
-                  let inc=await(select('TableIncome',['amount'],`host='${row.name}'`))
+                  let papers=await(select('TablePaper',['magazine'],`author LIKE %'${id}'%`))
+                  let p_count=0
+                  for(let i=0;i<papers.length;++i){
+                  }
+                  teach_award+=p_count/paper_base
                 }else if(row.level>4 && row.level<8){
                   const weight=1/6
                 }else if(row.level>7 && row.level<11){
