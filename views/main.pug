@@ -1,19 +1,9 @@
 extends form.pug 
 
 block form
-  div(class="form-group")
-    select(class="custom-select",name="engine",required)
-      option(value="") Select an engine
-      option(value="mcnp6.1") mcnp6.1
-      option(value="phits") phits
-      option(value="mc4nbp") mc4nbp
-    div(class="invalid-feedback") Please select one engine
-  div(class="form-group")
-    input(type="text",name="id",id="id",class="form-control",placeholder="id",required)
-    div(class="invalid-feedback") Enter id
   div(class="custom-file")
     input(type="file",name="input",id="input",class="custom-file-input",required)
-    label(class="custom-file-label",for="input") Choose file
+    label(class="custom-file-label",for="name") 输入表格
     div(class="invalid-feedback") Choose a file
     script.
       $('#input').on('change',function(){

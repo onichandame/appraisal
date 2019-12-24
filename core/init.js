@@ -21,36 +21,15 @@ async function init(){
 
 function initDoc(){
   const rootpath=path.resolve(global.basedir,'asset')
-  const inpath=path.resolve(rootpath,'input')
-  const outpath=path.resolve(rootpath,'output')
-  const calcpath=path.resolve(rootpath,'calc')
 
   return checkRoot()
-  .then(checkIn)
-  .then(checkOut)
-  .then(checkCalc)
   .then(()=>{
     global.assetpath=rootpath
-    global.inputpath=inpath
-    global.outputpath=outpath
-    global.calcpath=calcpath
     return
   })
 
   function checkRoot(){
     return checkPath(rootpath)
-  }
-
-  function checkIn(){
-    return checkPath(inpath)
-  }
-
-  function checkOut(){
-    return checkPath(outpath)
-  }
-
-  function checkCalc(){
-    return checkPath(calcpath)
   }
 
   function checkPath(p){

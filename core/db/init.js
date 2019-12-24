@@ -4,19 +4,71 @@ const fsp=fs.promises
 const addtable=require(path.resolve(global.basedir,'core','db','addtable.js'))
 const config=require(path.resolve(__dirname,'config.js'))
 
-const schema={
-  name:'TableTask',
-  cols:{
-    submitted_at:'INT NOT NULL',
-    status:'INT NOT NULL',// 0: finished & ready; 1: finished & post-processing; 2: calculating; 3: in queue; 4: not started; -1: failed
-    engine:'INT NOT NULL',// 0: MCNP6.1; 1: PHITS; 2: MC4NBP
-//    client:'INT NOT NULL', //will implement in future
-    started_at:'INT',
-    finished_at:'INT',
-    original_name:'TEXT',
-    est:'INT'
+const schema=[
+  {
+    name:'TablePeople',
+    cols:{
+      id:'TEXT NOT NULL',
+      name:'TEXT NOT NULL',
+      type:'INT NOT NULL',// -1:其它；0: 教学科研; 1: 教学; 2: 科研
+      level:'INT',
+      employed_from:'INT',
+      employed_til:'INT'
+    }
+  },
+  {
+    name:'TableUndergraduate',
+    cols:{
+      host:'TEXT',
+      term:'TEXT NOT NULL',
+      hours:'TEXT NOT NULL'
+    }
+  },
+  {
+    name:'TablePostgraduate',
+    cols:{
+      host:'TEXT',
+      term:'TEXT NOT NULL',
+      hours:'TEXT NOT NULL'
+    }
+  },
+  {
+    name:'TableProject',
+    cols:{
+      id:'TEXT NOT NULL',
+      level:'TEXT',
+      host:'TEXT',
+      started_at:'INT',
+      finished_at:'INT'
+    }
+  },
+  {
+    name:'TableIncome',
+    cols:{
+      project:'TEXT NOT NULL',
+      host:'TEXT',
+      amount:'INT',
+    }
+  },
+  {
+    name:'TablePaper',
+    cols:{
+      author:'TEXT NOT NULL',
+      host:'TEXT',
+      publish_at:'INT',
+      category:'INT',//0:non-sci; 1:sci
+      magazine:'INT'//0:normal; 1:core
+    }
+  },
+  {
+    name:'TableBook',
+    cols:{
+      author:'TEXT NOT NULL',
+      category:'INT',//-1:未知; 0:编著; 1:专著; 2:教材
+      publish_at:'INT',
+    }
   }
-}
+]
 
 function init(){
   return checkPath()
@@ -56,7 +108,10 @@ function init(){
   }
 
   function checkTable(){
-    return addtable(schema)
+    let result=[]
+    for(let i=0;i<schema.length;++i)
+      result.push(addtable(schema[i]))
+    return Promise.all(result)
   }
 }
 

@@ -1,14 +1,14 @@
 {
-  "name": "mc",
+  "name": "appraisal",
   "version": "0.0.0",
-  "description": "Server at MC cluster",
+  "description": "Server of appraisal",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js --ignore 'db/' --ignore 'asset/'"
+    "start": "nodemon server.js --ignore 'db/'"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/onichandame/mc.git"
+    "url": "git+ssh://git@github.com/onichandame/appraisal.git"
   },
   "keywords": [
     "express",
@@ -18,9 +18,9 @@
   "author": "Xiao Zhang",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/onichandame/mc/issues"
+    "url": "https://github.com/onichandame/appraisal/issues"
   },
-  "homepage": "https://github.com/onichandame/mc#readme",
+  "homepage": "https://github.com/onichandame/appraisal#readme",
   "dependencies": {
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
@@ -29,6 +29,7 @@
     "pug": "^2.0.4",
     "rimraf": "^3.0.0",
     "sqlite": "^3.0.3",
+    "xlsx": "^0.15.4",
     "zlib": "^1.0.5"
   }
 }

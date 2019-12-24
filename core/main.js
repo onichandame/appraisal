@@ -4,6 +4,6 @@ var router=express.Router()
 
 router.post('/',require(path.resolve(__dirname,'accept.js')))
 
-router.get('/',(req,res,next)=>{res.render('newjob.pug')})
+router.get('/',(req,res,next)=>{res.render('main.pug')})
 
 module.exports=router
