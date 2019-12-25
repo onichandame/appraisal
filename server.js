@@ -1,6 +1,8 @@
 const path=require('path')
 const express = require('express')
 const cookieparser=require('cookie-parser')
+const fs=require('fs')
+
 const init=require(path.resolve(__dirname,'core','init.js'))
 
 const app = express()
@@ -22,7 +24,12 @@ function mount(){
   })
 
   app.use('/readme',(req,res)=>{
-    res.download(path.resolve(__dirname,'readme.pdf'))
+    res.set('Content-Type','application/pdf')
+    res.set('Content-Dispisition','attachment;filename="readme.pdf"')
+    fs.readFile(path.resolve(__dirname,'readme.pdf'),(err,data)=>{
+      if(err) res.send('Server Internal Error')
+      else res.send(data)
+    })
   })
   app.use('/',require(path.resolve(__dirname,'core','main.js')))
 

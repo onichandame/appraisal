@@ -1,14 +1,18 @@
 extends form.pug 
 
 block form
+  img(class="mb-4",src="/logo.jpg")
   div(class="custom-file")
     input(type="file",name="input",id="input",class="custom-file-input",required)
-    label(class="custom-file-label",for="name") 输入表格
-    div(class="invalid-feedback") Choose a file
+    label(class="custom-file-label",for="name") 选择表格
+    div(class="invalid-feedback") 选择文件
     script.
       $('#input').on('change',function(){
         var filename=$(this).val().split('\\').pop()
         $(this).siblings('#input~.custom-file-label').addClass('selected').html(filename)
       })
-  div(class="form-group justify-content-center")
-    button(id="submit",type="submit",class="col-xs-10 col-md-6 col-lg-3 btn btn-primary col center-block",style="font-size:1.5rem;") Submit
+  div(class="col-12")
+    a(href='/readme') 使用本系统前请阅读此文
+  div(class="col-12")
+    a(href='/template') 下载模板表格
+  button(id="submit",type="submit",class="btn btn-lg btn-primary btn-block",style="font-size:1.5rem;") 上传表格
