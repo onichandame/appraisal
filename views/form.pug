@@ -4,6 +4,7 @@ block append head
   link(rel="stylesheet",href="/form.css")
 block main 
   div(class="text-center container")
-    div(class="col-lg-4 col-md-5 col-sm-12")
-      form(method="POST",enctype="multipart/form-data",class="form-signin")
-    block form
+    div(class="row justify-content-center")
+      div(class="col-lg-4 col-md-5 col-sm-12")
+        form(method="POST",enctype="multipart/form-data")
+          block form
