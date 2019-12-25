@@ -56,7 +56,7 @@ $C_i=\frac{W_i}{S_i}$为总工作量，$N$为考核项目数量，$W_i$为考核
 \subsubsection{基本架构}
 \begin{figure}[h]
   \centering
-  \includegraphics{image/struc.png}
+  \includegraphics[width=.5\textwidth]{image/struc.png}
   \caption{基本架构}
   \label{fig:struc}
 \end{figure}
@@ -66,10 +66,29 @@ $C_i=\frac{W_i}{S_i}$为总工作量，$N$为考核项目数量，$W_i$为考核
 服务器的运行依赖于Nodejs和npm。\par
 默认端口为10000。\par
 如果需要，可以提供服务器的源代码。\par
-测试服务器的地址为\url{http://34.94.165.54:10000/}
+测试服务器的地址为\url{http://34.94.165.54:10000/}\par
+测试服务器预计可以提供服务到2020年9月。期间如果系统出问题可以保证24小时内解决。
+\subsection{客户端}
+本产品的客户端为任何浏览器，支持IE 8+, Chrome, Firefox等主流浏览器。如果网页显示出现问题建议更换浏览器后重试。\par
+界面：\par
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=.5\textwidth]{image/client.png}
+  \caption{主页面}
+  \label{fig:client}
+\end{figure}
+如\autoref{fig:client}所示，主界面拥有4个链接。\par
+\begin{itemize}
+  \item [选择表格] 点击该项会弹窗，请选择需要上传的表格
+  \item [使用本系统前请阅读此文] 该项为本文的链接
+  \item [下载模板表格] 点击该项会下载模板输入表格，请根据模板表格的结构修改输入数据
+  \item [上传表格] 点击该按钮会上传输入表格并开始计算。由于输入文件较复杂，需要花费较长时间。请耐心等待10秒。
+\end{itemize}
 \subsection{输入}
-\subsection{输入}
-
+\url{http://34.94.165.54:10000/template}为模板输入文件。其中有12个表格。每个表格有若干列数据列。数据列以外的列不会影响计算，可以随意编辑。\par
+数据列第一行不允许改动，否则系统无法识别数据。其它列没有限制。\par
+数据列每一列皆有特定的规范，具体请见模板中每一页的注释。\par。
+请尤其注意，各表中姓名的识别方式不同，如果姓名的格式错误可能导致该行数据无法识别。
 \section{疑问}
 以下是对输入数据和算法的疑问。
 \begin{enumerate}

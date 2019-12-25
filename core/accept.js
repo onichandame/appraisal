@@ -592,9 +592,11 @@ module.exports=function(req,res,next){
               break
             }
             let participant=sheet[`${fields['完成人']}${row}`].v
-            const year=sheet[`${fields['年度']}${row}`] ? sheet[`${fields['年度']}${row}`].v : 0
+            let year=sheet[`${fields['年度']}${row}`] ? sheet[`${fields['年度']}${row}`].v : 0
             const level=sheet[`${fields['级别']}${row}`] ? sheet[`${fields['级别']}${row}`].v : ''
             const award=sheet[`${fields['等级']}${row}`] ? sheet[`${fields['等级']}${row}`].v : ''
+            year=parseInt(year.substr(0,year.length))
+            if(isNaN(year)) year=0
             participant=participant.split('、')
             let sql={
               participant:participant,
