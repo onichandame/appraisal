@@ -4,7 +4,7 @@
   "description": "Server of appraisal",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js --ignore 'db/'"
+    "start": "nodemon server.js --ignore 'db/' --ignore 'template.xlsx' --ignore 'asset' --ignore 'node_modules' --ignore 'readme' --ignore 'readme.pdf'"
   },
   "repository": {
     "type": "git",

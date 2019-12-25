@@ -56,8 +56,8 @@ const schema=[
       author:'TEXT NOT NULL',
       host:'TEXT',
       publish_at:'INT',
-      category:'INT',//0:non-sci; 1:sci
-      magazine:'INT'//0:normal; 1:core
+      category:'INT',//0:normal; 1:sci; 2:sci-ei; 3:ei
+      magazine:'INT'//0:normal; 1:core 2:supercore
     }
   },
   {
@@ -66,6 +66,46 @@ const schema=[
       author:'TEXT NOT NULL',
       category:'INT',//-1:未知; 0:编著; 1:专著; 2:教材
       publish_at:'INT',
+    }
+  },
+  {
+    name:'TableEliteCourse',
+    cols:{
+      year:'INT NOT NULL',
+      host:'TEXT NOT NULL',
+      level:'INT'//-1:未知; 0:校级; 1:国家级
+    }
+  },
+  {
+    name:'TableThesisAward',
+    cols:{
+      teacher:'TEXT NOT NULL',
+      year:'INT'
+    }
+  },
+  {
+    name:'TableTeachAward',
+    cols:{
+      participant:'TEXT NOT NULL',
+      year:'INT',
+      level:'INT',//-1:未知;0:校级;1:省部级;2:国家级
+      award:'INT',//-1:未知;0:特等奖;1:一等奖;2:二等奖;3:三等奖
+    }
+  },
+  {
+    name:'TablePatent',
+    cols:{
+      participant:'TEXT NOT NULL',
+      date:'INT'
+    }
+  },
+  {
+    name:'TableResearchAward',
+    cols:{
+      participant:'TEXT NOT NULL',
+      year:'INT',
+      level:'INT',//-1:未知;0:部省级;1:国家级
+      award:'INT'//-1:未知;1:一等奖;2:二等奖;3:三等奖
     }
   }
 ]

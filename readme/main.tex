@@ -24,7 +24,7 @@
 \section{需求}
 \subsection{原始需求}
 需要对每个被考核人进行工作量计算。
-\begin{enumerate}
+\begin{enumerate}[label=\protect\circled{\arabic*}]
     \item 工作量计算
     \item 计算过程图像化展示
     \item 用户管理
@@ -49,34 +49,28 @@ $C_i=\frac{W_i}{S_i}$为总工作量，$N$为考核项目数量，$W_i$为考核
 \end{itemize}
 每个岗位类型分10级，不同等级对应不同的基准工作量和总任务量。
 \section{工作量计算标准}
-猜测：每种考核方向的比重相同，以恰好完成基准工作量为1，如必要项未完成，为0；如非必要项未完成，按比例扣分；如超标完成，按比例加分。\par
+每种考核方向的比重相同，以恰好完成基准工作量为1，如必要项未完成，为0；如非必要项未完成，按比例扣分；如超标完成，按比例加分。\par
 完成每种考核后按\autoref{eq:main}计算总分。\par
-\section{输入表格}
-所有信息都以表格形式输入，包括以下表格：
-\begin{multicols}{2}
-  \begin{itemize}
-    \item 被考核人
-      \begin{itemize}
-        \item 姓名
-        \item 工号
-        \item 岗位性质
-        \item 等级
-        \item 聘期起始日
-        \item 聘期结束日
-      \end{itemize}
-    \item 本科课程
-      \begin{itemize}
-        \item 课程序号
-        \item 课程名称
-        \item 负责人
-        \item 学期
-        \item 总课时
-      \end{itemize}
-    \item 研究生课程
-    \item 书籍出版
-    \item 论文出版
-  \end{itemize}
-\end{multicols}
+\section{产品介绍}
+由于工期原因，仅需求\circled{1}可以保证完成；如一切顺利，需求\circled{2}可以数字的形式显示，图像化无法完成；需求\circled{3}确定无法按期完成。\par
+\subsubsection{基本架构}
+\begin{figure}[h]
+  \centering
+  \includegraphics{image/struc.png}
+  \caption{基本架构}
+  \label{fig:struc}
+\end{figure}
+如\autoref{fig:struc}所示，本产品的基本模式为服务器-客户端模式。\par
+\subsection{服务器}
+服务器采用Node.js/Express.js/Pug技术，可在Windows/Linux平台上运行。\par
+服务器的运行依赖于Nodejs和npm。\par
+默认端口为10000。\par
+如果需要，可以提供服务器的源代码。\par
+测试服务器的地址为\url{http://34.94.165.54:10000/}
+\subsection{输入}
+\subsection{输入}
+
+\section{疑问}
 以下是对输入数据和算法的疑问。
 \begin{enumerate}
   \item 研究生课程是否计入教学课时考核？如是，请提供研究生课程的课时
