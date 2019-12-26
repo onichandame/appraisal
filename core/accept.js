@@ -636,7 +636,7 @@ module.exports=function(req,res,next){
         people.G1={t:'s',v:'分数'}
         let result=[]
         let max_row=parseInt(people['!ref'].substr(4,people['!ref'].length))
-        for(let row_num=2;row_num<max_row;++row_num){
+        for(let row_num=2;row_num<=max_row;++row_num){
           let id=people[`${fields['工号']}${row_num}`].v
           result.push(select('TablePeople',['*'],`id='${id}'`)
             .then(async rows=>{
