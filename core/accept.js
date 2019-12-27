@@ -20,7 +20,8 @@ const required_sheets=[
   "优秀毕业论文",
   "教学成果奖",
   "专利",
-  "科研成果奖"
+  "科研成果奖",
+  "学生竞赛"
 ]
 
 module.exports=function(req,res,next){
@@ -103,6 +104,8 @@ module.exports=function(req,res,next){
         .then(()=>{return drop('TableResearchAward')})
         .then(populateResearchAward)
         .then(()=>{console.log('research award populated')})
+        .then(populateStudentAward)
+        .then(()=>{console.log('student award populated')})
 
         function populatePeople(){
           let people=wb.Sheets['被考核人']
@@ -354,7 +357,7 @@ module.exports=function(req,res,next){
               author:author,
               host:host,
               publish_at:publish.getTime(),
-              category:cat ? (cat.includes('SCIE-EI') || cat.includes('SCI-EI') ? 2 : (cat.includes('SCI') ? 1 : (cat.includes('EI') ? 3 : 0))) : 0,
+              category:cat ? cat.includes('SCI') ? 2 : (cat.includes('EI') ? 1 : 0) : 0,
               magazine:level ? (level.includes('重要核心') ? 2 : (level.includes('核心') ? 1 : 0)) : 0
             }
             result.push(insert('TablePaper',sql))
@@ -609,6 +612,39 @@ module.exports=function(req,res,next){
           }
           return Promise.all(result)
         }
+
+        function populateStudentAward(){
+          let sheet=wb.Sheets['学生竞赛']
+          let fields={
+            工号:false
+          }
+          const head='A'
+          for(let i=0;i<head.length;++i){
+            let index=`${head[i]}1`
+            for(let j=0;j<head.length;++j){
+              if(Object.keys(fields)[j]==sheet[index].v)
+                fields[sheet[index].v]=head[i]
+            }
+          }
+          for(let i=0;i<head.length;++i)
+            if(!Object.values(fields)) return Promise.reject(14)
+          let flag=true
+          let row=2
+          let result=[]
+          while(flag){
+            if(sheet[`${fields['工号']}${row}`] == undefined){
+              flag=false
+              break
+            }
+            const teacher=sheet[`${fields['工号']}${row}`].v
+            let sql={
+              teacher:teacher
+            }
+            result.push(insert('TableStudentAward',sql))
+            ++row
+          }
+          return Promise.all(result)
+        }
       }
 
       function compute(){
@@ -664,16 +700,15 @@ module.exports=function(req,res,next){
 
                   // Teach Award
                   let teach_award=0
-                  const paper_base=1
-                  let papers=await getPaper({core:true})
-                  teach_award+=papers/paper_base
                   const elite_course_base=1
                   let elite_course=await getEliteCourse({level:0,min_pos:3})
                   teach_award+=elite_course/elite_course_base
                   const thesis_award_base=1
                   let thesis_award=await getThesisAward()
                   teach_award+=thesis_award/thesis_award_base
-                  // ?? 创新竞赛&学科竞赛
+                  const student_award_base=1
+                  let student_award=await getStudentAward()
+                  teach_award+=student_award/student_award_base
                   const spe_teach_award_base=1
                   let spe_teach_award=await getTeachAward({
                     0:{
@@ -697,8 +732,8 @@ module.exports=function(req,res,next){
 
                   // Research Award
                   let research_award=0
-                  const research_paper_base=4
-                  let research_papers=await getPaper({sci:true})
+                  const research_paper_base=16
+                  let research_papers=await getPaper()
                   research_award+=research_papers/research_paper_base
                   const patent_base=2
                   let patent=await getPatent({min_pos:3})
@@ -743,16 +778,15 @@ module.exports=function(req,res,next){
 
                   // Teach Award
                   let teach_award=0
-                  const paper_base=1
-                  let papers=await getPaper({core:true})
-                  teach_award+=papers/paper_base
                   const elite_course_base=1
                   let elite_course=await getEliteCourse({level:0,min_pos:2})
                   teach_award+=elite_course/elite_course_base
                   const thesis_award_base=1
                   let thesis_award=await getThesisAward()
                   teach_award+=thesis_award/thesis_award_base
-                  // ?? 创新竞赛&学科竞赛
+                  const student_award_base=1
+                  let student_award=await getStudentAward()
+                  teach_award+=student_award/student_award_base
                   const spe_teach_award_base=1
                   let spe_teach_award=await getTeachAward({
                     0:{
@@ -777,10 +811,8 @@ module.exports=function(req,res,next){
 
                   // Research Award
                   let research_award=0
-                  const research_paper_base=4
-                  let research_papers=await getPaper({sci:true})
-                  research_papers+=await getPaper({ei:true})
-                  research_papers+=await getPaper({supercore:true})
+                  const research_paper_base=12
+                  let research_papers=await getPaper()
                   research_award+=research_papers/research_paper_base
                   const patent_base=1
                   let patent=await getPatent({min_pos:3})
@@ -825,15 +857,15 @@ module.exports=function(req,res,next){
 
                   // Award
                   let award=0
-                  const paper_base=3
-                  let papers=await getPaper({sci:true})
-                  papers+=await getPaper({ei:true})
-                  papers+=await getPaper({supercore:true})
+                  const paper_base=10
+                  let papers=await getPaper()
                   award+=papers/paper_base
                   const patent_base=2
                   let patent=await getPatent({min_pos:3})
                   award+=patent/patent_base
-                  // ?? 创新竞赛&学科竞赛
+                  const student_award_base=1
+                  let student_award=await getStudentAward()
+                  award+=student_award/student_award_base
                   const spe_award_base=1
                   let spe_award=await getTeachAward({
                     0:{
@@ -866,7 +898,7 @@ module.exports=function(req,res,next){
                     }
                   })
                   award+=spe_award/spe_award_base
-                  mark+=0.5 * weight * award
+                  mark+=weight * award
 
                   // Group Activity
                   mark+=weight * 1
@@ -890,7 +922,7 @@ module.exports=function(req,res,next){
                   // Award
                   let award=0
                   const paper_base=6
-                  let papers=await getPaper({core:true})
+                  let papers=await getPaper()
                   award+=papers/paper_base
                   const elite_course_base=1
                   let elite_course=await getEliteCourse({level:0,min_pos:1})
@@ -901,7 +933,9 @@ module.exports=function(req,res,next){
                   const book_base=1
                   let book=await getBook({min_pos:3})
                   award+=book/book_base
-                  // ?? 创新竞赛&学科竞赛
+                  const student_award_base=1
+                  let student_award=await getStudentAward()
+                  award+=student_award/student_award_base
                   const spe_award_base=1
                   let spe_award=await getTeachAward({
                     0:{
@@ -959,7 +993,7 @@ module.exports=function(req,res,next){
                   // Award
                   let award=0
                   const paper_base=5
-                  let papers=await getPaper({core:true})
+                  let papers=await getPaper()
                   award+=papers/paper_base
                   const elite_course_base=1
                   let elite_course=await getEliteCourse({level:0,min_pos:2})
@@ -970,7 +1004,9 @@ module.exports=function(req,res,next){
                   const book_base=1
                   let book=await getBook({min_pos:3})
                   award+=book/book_base
-                  // ?? 创新竞赛&学科竞赛
+                  const student_award_base=1
+                  let student_award=await getStudentAward()
+                  award+=student_award/student_award_base
                   const spe_award_base=1
                   let spe_award=await getTeachAward({
                     0:{
@@ -1035,14 +1071,9 @@ module.exports=function(req,res,next){
 
                   // Research Award
                   let research_award=0
-                  const sci_paper_base=4
-                  let sci_papers=await getPaper({sci:true})
-                  sci_papers=sci_papers>sci_paper_base ? sci_papers : 0
-                  const ei_paper_base=2
-                  let ei_papers=await getPaper({ei:true})
-                  ei_papers+=await getPaper({supercore:true})
-                  ei_papers=ei_papers>ei_paper_base ? ei_papers : 0
-                  research_award+=(sci_papers*ei_papers)>0 ? (sci_papers+ei_papers)/6 : 0
+                  const paper_base=20
+                  let papers=await getPaper()
+                  research_award+=papers/paper_base
                   const patent_base=3
                   let patent=await getPatent({min_pos:3})
                   research_award+=patent/patent_base
@@ -1052,6 +1083,9 @@ module.exports=function(req,res,next){
                   const thesis_award_base=2
                   let thesis_award=await getThesisAward()
                   research_award+=thesis_award/thesis_award_base
+                  const student_award_base=1
+                  let student_award=await getStudentAward()
+                  research_award+=student_award/student_award_base
                   const spe_research_award_base=1
                   let spe_research_award=await getResearchAward({
                     0:{
@@ -1064,7 +1098,6 @@ module.exports=function(req,res,next){
                       3:4
                     }
                   })
-                  spe_research_award=spe_research_award>spe_research_award_base ? spe_research_award : 0
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
                   mark+=research_award>1 ? (weight*research_award) : 0
@@ -1090,14 +1123,9 @@ module.exports=function(req,res,next){
 
                   // Research Award
                   let research_award=0
-                  const sci_paper_base=2
-                  let sci_papers=await getPaper({sci:true})
-                  sci_papers=sci_papers>sci_paper_base ? sci_papers : 0
-                  const ei_paper_base=4
-                  let ei_papers=await getPaper({ei:true})
-                  ei_papers+=await getPaper({supercore:true})
-                  ei_papers=ei_papers>ei_paper_base ? ei_papers : 0
-                  research_award+=(sci_papers*ei_papers)>0 ? (sci_papers+ei_papers)/6 : 0
+                  const paper_base=16
+                  let papers=await getPaper()
+                  research_award+=papers/paper_base
                   const patent_base=2
                   let patent=await getPatent({min_pos:3})
                   research_award+=patent/patent_base
@@ -1107,6 +1135,9 @@ module.exports=function(req,res,next){
                   const thesis_award_base=1
                   let thesis_award=await getThesisAward()
                   research_award+=thesis_award/thesis_award_base
+                  const student_award_base=1
+                  let student_award=await getStudentAward()
+                  research_award+=student_award/student_award_base
                   const spe_research_award_base=1
                   let spe_research_award=await getResearchAward({
                     0:{
@@ -1120,7 +1151,6 @@ module.exports=function(req,res,next){
                       3:5
                     }
                   })
-                  spe_research_award=spe_research_award>spe_research_award_base ? spe_research_award : 0
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
                   mark+=research_award>1 ? (weight*research_award) : 0
@@ -1146,17 +1176,15 @@ module.exports=function(req,res,next){
 
                   // Research Award
                   let research_award=0
-                  const sci_paper_base=2
-                  let sci_papers=await getPaper({sci:true})
-                  sci_papers=sci_papers>sci_paper_base ? sci_papers : 0
-                  const ei_paper_base=2
-                  let ei_papers=await getPaper({ei:true})
-                  ei_papers+=await getPaper({supercore:true})
-                  ei_papers=ei_papers>ei_paper_base ? ei_papers : 0
-                  research_award+=(sci_papers*ei_papers)>0 ? (sci_papers+ei_papers)/4 : 0
+                  const paper_base=12
+                  let papers=await getPaper()
+                  research_award+=papers/paper_base
                   const patent_base=2
                   let patent=await getPatent({min_pos:3})
                   research_award+=patent/patent_base
+                  const student_award_base=1
+                  let student_award=await getStudentAward()
+                  research_award+=student_award/student_award_base
                   const spe_research_award_base=1
                   let spe_research_award=await getResearchAward({
                     0:{
@@ -1170,7 +1198,6 @@ module.exports=function(req,res,next){
                       3:6
                     }
                   })
-                  spe_research_award=spe_research_award>spe_research_award_base ? spe_research_award : 0
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
                   mark+=research_award>1 ? (weight*research_award) : 0
@@ -1248,19 +1275,16 @@ module.exports=function(req,res,next){
                 })
               }
 
-              function getPaper(prop){
-                if(!prop) prop={}
-                const need_sci=prop.sci | false
-                const need_ei=prop.ei | false
-                const need_core=prop.core | false
-                const need_supercore=prop.supercore | false
-                return select('TablePaper',['category'],`author='${id}'${need_sci ? ' AND category=1' : ''}${need_core ? ' AND magazine=1' : ''}${need_ei ? ' AND category=3' : ''}${need_supercore ? ' AND magazine=2' : ''}`)
+              function getPaper(){
+                return select('TablePaper',['category','magazine'],`author='${id}' and magazine>0`)
                 .then(rows=>{
-                  let result=rows.length
-                  if(need_sci)
-                    rows.forEach(r=>{
-                      if(r.category==2) ++result
-                    })
+                  let result=0
+                  rows.forEach(r=>{
+                    if(r.category==2) result+=4
+                    else if(r.category==1) result+=2
+                    else if(r.magazine==2) result+=2
+                    else if(r.magazine==1) result+=1
+                  })
                   return result
                 })
               }
@@ -1330,6 +1354,13 @@ module.exports=function(req,res,next){
                       if(Object.keys(prop[rows[i].level]).includes(rows[i].award))
                         if(JSON.parse(rows[i].participant).indexOf(row.name) < prop[rows[i].level][rows[i].award]) ++result
                   return result
+                })
+              }
+
+              function getStudentAward(prop){
+                return select('TableStudentAward',[1],`teacher='${id}'`)
+                .then(rows=>{
+                  return rows.length
                 })
               }
             })
@@ -1441,6 +1472,13 @@ module.exports=function(req,res,next){
           res.status(400)
         })
         break
+      case 14:
+        return logger.info('student award sheet missing information')
+        .then(()=>{
+          res.body='student award sheet missing information'
+          res.status(400)
+        })
+        break
       default:
         return logger.warn(`Server internal error during handling request ${JSON.stringify(e)}`)
         .then(()=>{
@@ -1455,7 +1493,7 @@ module.exports=function(req,res,next){
     if(res.body)
       res.send(JSON.stringify(res.body))
     else if(res.file)
-      res.download(res.file)
+      res.download(res.file,'航天学院2017-2019年度聘期考核工作量统计表.xlsx')
     else
       res.send()
     return Promise.resolve(res)

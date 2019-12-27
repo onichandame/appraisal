@@ -56,7 +56,7 @@ const schema=[
       author:'TEXT NOT NULL',
       host:'TEXT',
       publish_at:'INT',
-      category:'INT',//0:normal; 1:sci; 2:sci-ei; 3:ei
+      category:'INT',//0:normal; 1:ei; 2:sci;
       magazine:'INT'//0:normal; 1:core 2:supercore
     }
   },
@@ -106,6 +106,12 @@ const schema=[
       year:'INT',
       level:'INT',//-1:未知;0:部省级;1:国家级
       award:'INT'//-1:未知;1:一等奖;2:二等奖;3:三等奖
+    }
+  },
+  {
+    name:'TableStudentAward',
+    cols:{
+      teacher:'TEXT NOT NULL'
     }
   }
 ]

@@ -20,7 +20,7 @@ function mount(){
   app.use(cookieparser())
    
   app.use('/template',(req,res)=>{
-    res.download(path.resolve(__dirname,'template.xlsx'))
+    res.download(path.resolve(__dirname,'template.xlsx'),'航天学院2017-2019年度聘期考核工作量统计表.xlsx')
   })
 
   app.use('/readme',(req,res)=>{
