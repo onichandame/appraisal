@@ -2,6 +2,7 @@ const path=require('path')
 const express = require('express')
 const cookieparser=require('cookie-parser')
 const fs=require('fs')
+const fsp=fs.promises
 
 const init=require(path.resolve(__dirname,'core','init.js'))
 
@@ -21,6 +22,11 @@ function mount(){
    
   app.use('/template',(req,res)=>{
     res.download(path.resolve(__dirname,'template.xlsx'),'航天学院2017-2019年度聘期考核工作量统计表.xlsx')
+  })
+
+  app.use('/latest',async (req,res)=>{
+    const fn=path.resolve(__dirname,'asset','input.xlsx')
+    res.download(fn,'航天学院2017-2019年度聘期考核工作量统计表'+await fsp.stat(fn).then(stat=>{return `${stat.birthtime.getFullYear()}_${stat.birthtime.getMonth()+1}_${stat.birthtime.getDate()}`})+'.xlsx')
   })
 
   app.use('/readme',(req,res)=>{

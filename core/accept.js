@@ -42,21 +42,25 @@ module.exports=function(req,res,next){
         return resolve({fields:fields,files:files})
       })
     })
+    .then(fe=>{
+      if(!(fe && fe.files && fe.files.input)) return Promise.reject(1)
+      const fn=path.resolve(global.assetpath,'input.'+fe.files.input.name.split('.').pop())
+      return fsp.rename(fe.files.input.path,fn)
+      .then(()=>{
+        return fn
+      })
+    })
   }
 
-  function calc(fe){
-    const {files}=fe
-
-    if(!(files&&files.input)) return Promise.reject(1)
-
+  function calc(fn){
     return checkSheets()
     .then(calculate)
     .then(wb=>{
-      xlsx.writeFile(wb,path.resolve(global.assetpath,'output.xls'))
+      xlsx.writeFile(wb,path.resolve(global.assetpath,'output.xlsx'))
     })
 
     function checkSheets(){
-      var book=xlsx.readFile(files.input.path)
+      var book=xlsx.readFile(fn)
       for(let i=0;i<required_sheets.length;++i)
         if(!book.SheetNames.includes(required_sheets[i]))
           return Promise.reject(2)
@@ -1374,7 +1378,7 @@ module.exports=function(req,res,next){
 
   function finalize(){
     res.status(200)
-    res.file=path.resolve(global.assetpath,'output.xls')
+    res.file=path.resolve(global.assetpath,'output.xlsx')
     return Promise.resolve()
   }
 
