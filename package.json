@@ -22,11 +22,13 @@
   },
   "homepage": "https://github.com/onichandame/appraisal#readme",
   "dependencies": {
+    "checkpath": "^1.0.7",
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
     "formidable": "^1.2.1",
     "nodemon": "^1.19.4",
     "pug": "^2.0.4",
+    "randomstring": "^1.1.5",
     "rimraf": "^3.0.0",
     "sqlite": "^3.0.3",
     "xlsx": "^0.15.4",

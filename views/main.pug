@@ -2,6 +2,7 @@ extends form.pug
 
 block form
   img(class="mb-4",src="/logo.jpg")
+  a(href='/lock',class='col-12 btn btn-dark') 锁定
   div(class="custom-file")
     input(type="file",name="input",id="input",class="custom-file-input",required)
     label(class="custom-file-label",for="name") 选择表格
@@ -15,7 +16,39 @@ block form
     a(href='/readme') 使用本系统前请阅读此文
   div(class="col-12")
     a(href='/template') 下载模板表格
-  div(class="col-12")
-    a(href='/latest') 下载最新版表格
   div(class="form-group justify-content-center")
-    button(id="submit",type="submit",class="btn btn-lg btn-primary btn-block",style="font-size:1.5rem;") 上传表格
+    button(id="submit",type="button",class="btn btn-lg btn-danger btn-block",data-toggle="modal",data-target="#getkey",style="font-size:1.5rem;") 上传表格
+  a(href='/latest',class='col-12 btn btn-primary') 下载最新版表格
+append main
+  div(class="modal fade",id="getkey",tabindex="-1",role="dialog",aria-labelledby="getkey",aria-hidden="true")
+    div(class="modal-dialog",role="document")
+      div(class="modal-content")
+        div(class="modal-header")
+          h5(class="modal-title",id="inputkey") 输入上传码
+          button(type="button",class="close",data-dismiss="modal",aria-label="Close")
+            span(aria-hidden="true") &times;
+        div(class="modal-body")
+          input(id="key",type="text",class="form-control")
+        div(class="modal-footer")
+          button(type="button",class="btn btn-secondary",data-dismiss="modal") 取消
+          button(onclick="submit()",type="button",class="btn btn-primary") 确定
+append script
+  script.
+    function submit(){
+      alert('hi')
+      let xhr=new XMLHttpRequest()
+      xhr.open('POST','')
+      let form=new FormData()
+      form.append('input',$('#input').prop('files')[0])
+      form.append('key',$('#key').val())
+      xhr.send(form)
+      xhr.onload=function(){
+        if(xhr.status===200) alert('上传成功')
+        else if(xhr.status===401) alert('验证失败')
+        else alert(xhr.response)
+        $('#getkey').modal('hide')
+      }
+      xhr.onerror=function(){
+        alert('上传失败')
+      }
+    }

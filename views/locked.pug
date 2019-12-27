@@ -1,0 +1,7 @@
+extends base.pug
+
+block append head
+  link(rel="stylesheet",href="/form.css")
+block main 
+  div(class="container")
+    div(class="alert alert-danger") 已有人生成了上传码。如果确定是你生成的，请点击<a href="/getlock">此处</a>获取上传码

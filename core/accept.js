@@ -43,9 +43,18 @@ module.exports=function(req,res,next){
       })
     })
     .then(fe=>{
-      if(!(fe && fe.files && fe.files.input)) return Promise.reject(1)
+      if(!(fe && fe.fields && fe.fields.key && fe.files && fe.files.input)) return Promise.reject(1)
       const fn=path.resolve(global.assetpath,'input.'+fe.files.input.name.split('.').pop())
-      return fsp.rename(fe.files.input.path,fn)
+      return select('TableLock',['*'])
+      .then(rows=>{
+        if(!rows.length) return Promise.reject(0)
+        if(!rows[0].key) return Promise.reject(0)
+        if(new Date().getTime()-rows[0].timestamp>30*60*1000) return Promise.reject(0)
+        if(fe.fields.key!=rows[0].key) return Promise.reject(0)
+      })
+      .then(()=>{
+        return fsp.rename(fe.files.input.path,fn)
+      })
       .then(()=>{
         return fn
       })
@@ -1385,6 +1394,13 @@ module.exports=function(req,res,next){
   function handleError(e){
     console.log(e)
     switch(e){
+      case 0:
+        return logger.info('key unmatch')
+        .then(()=>{
+          res.body='key not matched'
+          res.status(401)
+        })
+        break
       case 1:
         return logger.info('file not uploaded')
         .then(()=>{
@@ -1492,12 +1508,12 @@ module.exports=function(req,res,next){
     }
   }
 
-  function reply(){
+  async function reply(){
     if(!res.statusCode) res.status(500)
     if(res.body)
       res.send(JSON.stringify(res.body))
     else if(res.file)
-      res.download(res.file,'航天学院2017-2019年度聘期考核工作量统计表.xlsx')
+      res.download(res.file,'航天学院2017-2019年度聘期考核工作量统计表'+await fsp.stat(res.file).then(stat=>{return `${stat.birthtime.getFullYear()}_${stat.birthtime.getMonth()+1}_${stat.birthtime.getDate()}`})+'.xlsx')
     else
       res.send()
     return Promise.resolve(res)

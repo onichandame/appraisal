@@ -113,6 +113,13 @@ const schema=[
     cols:{
       teacher:'TEXT NOT NULL'
     }
+  },
+  {
+    name:'TableLock',
+    cols:{
+      key:'TEXT NOT NULL',
+      timestamp:'INT NOT NULL'
+    }
   }
 ]
 
