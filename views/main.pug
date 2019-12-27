@@ -2,8 +2,10 @@ extends form.pug
 
 block form
   img(class="mb-4",src="/logo.jpg")
+  div(class="col-12")
+    a(href='/readme') 使用本系统前请阅读此文
   a(href='/lock',class='col-12 btn btn-dark') 锁定
-  div(class="custom-file")
+  div(class="custom-file",style="margin:20px 0px;")
     input(type="file",name="input",id="input",class="custom-file-input",required)
     label(class="custom-file-label",for="name") 选择表格
     div(class="invalid-feedback") 选择文件
@@ -12,13 +14,10 @@ block form
         var filename=$(this).val().split('\\').pop()
         $(this).siblings('#input~.custom-file-label').addClass('selected').html(filename)
       })
-  div(class="col-12")
-    a(href='/readme') 使用本系统前请阅读此文
-  div(class="col-12")
-    a(href='/template') 下载模板表格
   div(class="form-group justify-content-center")
     button(id="submit",type="button",class="btn btn-lg btn-danger btn-block",data-toggle="modal",data-target="#getkey",style="font-size:1.5rem;") 上传表格
   a(href='/latest',class='col-12 btn btn-primary') 下载最新版表格
+  a(href='/template',class="col-12") 下载模板表格
 append main
   div(class="modal fade",id="getkey",tabindex="-1",role="dialog",aria-labelledby="getkey",aria-hidden="true")
     div(class="modal-dialog",role="document")
@@ -35,7 +34,7 @@ append main
 append script
   script.
     function submit(){
-      alert('hi')
+      alert('正在上传')
       let xhr=new XMLHttpRequest()
       xhr.open('POST','')
       let form=new FormData()

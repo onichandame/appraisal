@@ -1388,7 +1388,7 @@ module.exports=function(req,res,next){
   function finalize(){
     res.status(200)
     res.file=path.resolve(global.assetpath,'output.xlsx')
-    return Promise.resolve()
+    return drop('TableLock')
   }
 
   function handleError(e){
