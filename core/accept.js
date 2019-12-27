@@ -1387,7 +1387,6 @@ module.exports=function(req,res,next){
 
   function finalize(){
     res.status(200)
-    res.file=path.resolve(global.assetpath,'output.xlsx')
     return drop('TableLock')
   }
 
@@ -1512,8 +1511,6 @@ module.exports=function(req,res,next){
     if(!res.statusCode) res.status(500)
     if(res.body)
       res.send(JSON.stringify(res.body))
-    else if(res.file)
-      res.download(res.file,'航天学院2017-2019年度聘期考核工作量统计表'+await fsp.stat(res.file).then(stat=>{return `${stat.birthtime.getFullYear()}_${stat.birthtime.getMonth()+1}_${stat.birthtime.getDate()}`})+'.xlsx')
     else
       res.send()
     return Promise.resolve(res)
