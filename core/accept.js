@@ -280,7 +280,7 @@ module.exports=function(req,res,next){
             const end=sheet[`${fields['结束日期']}${row}`] ? new Date(sheet[`${fields['结束日期']}${row}`].v) : 0
             let sql={
               id:id,
-              level:level,
+              level:level ? (level.includes('国际') ? 2 : (level.includes('国家') ? 1 : (level.includes('省') ? 0 : -1))) : -1,
               host:host,
               started_at:start ? start.getTime() : 0,
               finished_at:end ? end.getTime() : 0
@@ -449,7 +449,7 @@ module.exports=function(req,res,next){
             }
             let host=sheet[`${fields['主持人']}${row}`].v
             const level=sheet[`${fields['立项等级']}${row}`].v
-            const year=sheet[`${fields['立项年份']}${row}`] ? new Date(sheet[`${fields['立项年份']}${row}`].v) : 0
+            const year=sheet[`${fields['立项年份']}${row}`] ? sheet[`${fields['立项年份']}${row}`].v : 0
             host=host.split('/')
             let sql={
               host:host,
@@ -525,7 +525,7 @@ module.exports=function(req,res,next){
               break
             }
             let participant=sheet[`${fields['完成人']}${row}`].v
-            const year=sheet[`${fields['年度']}${row}`] ? new Date(sheet[`${fields['年度']}${row}`].v) : 0
+            const year=sheet[`${fields['年度']}${row}`] ? sheet[`${fields['年度']}${row}`].v : 0
             const level=sheet[`${fields['等级']}${row}`] ? sheet[`${fields['等级']}${row}`].v : ''
             const award=sheet[`${fields['获奖等级']}${row}`] ? sheet[`${fields['获奖等级']}${row}`].v : ''
             participant=participant.split('/')
@@ -703,7 +703,7 @@ module.exports=function(req,res,next){
 
                   // Projects
                   const proj_base=1
-                  let proj=await getProject(['国家','省部','国际'])
+                  let proj=await getProject(0)
                   mark+=weight * proj/proj_base
 
                   // Income
@@ -781,7 +781,7 @@ module.exports=function(req,res,next){
 
                   // Projects
                   const proj_base=1
-                  let proj=await getProject(['国家','省部','国际'])
+                  let proj=await getProject(0)
                   mark+=weight * proj/proj_base
 
                   // Income
@@ -860,7 +860,7 @@ module.exports=function(req,res,next){
 
                   // Projects
                   const proj_base=1
-                  let proj=await getProject(['国家'])
+                  let proj=await getProject(1)
                   mark+=0.5 * weight * proj/proj_base
 
                   // Income
@@ -1074,7 +1074,7 @@ module.exports=function(req,res,next){
 
                   // Projects
                   const proj_base=1
-                  let proj=await getProject(['国家','国际'])
+                  let proj=await getProject(1)
                   mark+=weight * proj/proj_base
 
                   // Income
@@ -1126,7 +1126,7 @@ module.exports=function(req,res,next){
 
                   // Projects
                   const proj_base=1
-                  let proj=await getProject(['国家','省部','国际'])
+                  let proj=await getProject(0)
                   mark+=weight * proj/proj_base
 
                   // Income
@@ -1179,7 +1179,7 @@ module.exports=function(req,res,next){
 
                   // Projects
                   const proj_base=1
-                  let proj=await getProject(['国家','省部','国际'])
+                  let proj=await getProject(0)
                   mark+=weight * proj/proj_base
 
                   // Income
@@ -1262,17 +1262,12 @@ module.exports=function(req,res,next){
                 })
               }
 
-              function getProject(levels){
-                return select('TableProject',[1],`host='${id}' AND started_at > ${row.employed_from} AND finished_at < ${row.employed_til}${parseLevels()}`)
+              function getProject(min_lvl){
+                min_lvl=min_lvl | 0
+                return select('TableProject',[1],`host='${id}' AND started_at > ${row.employed_from} AND finished_at < ${row.employed_til} AND level >= ${min_lvl}`)
                 .then(rows=>{
                   return rows.length
                 })
-
-                function parseLevels(){
-                  for(let i=0;i<levels.length;++i)
-                    levels[i]=`level LIKE '%${levels[i]}%'`
-                  return `${levels.length ? ` AND (${levels.join(' OR ')})` : ''}`
-                }
               }
 
               function getIncome(){
@@ -1289,7 +1284,7 @@ module.exports=function(req,res,next){
               }
 
               function getPaper(){
-                return select('TablePaper',['category','magazine'],`author='${id}' and magazine>0`)
+                return select('TablePaper',['category','magazine'],`author LIKE '%${id}%' and magazine>0`)
                 .then(rows=>{
                   let result=0
                   rows.forEach(r=>{

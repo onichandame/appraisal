@@ -36,7 +36,7 @@ const schema=[
     name:'TableProject',
     cols:{
       id:'TEXT NOT NULL',
-      level:'TEXT',
+      level:'INT',//-1:未知; 0:省部; 1:国家; 2:国际
       host:'TEXT',
       started_at:'INT',
       finished_at:'INT'
