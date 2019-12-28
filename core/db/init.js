@@ -53,8 +53,7 @@ const schema=[
   {
     name:'TablePaper',
     cols:{
-      author:'TEXT NOT NULL',
-      host:'TEXT',
+      host:'TEXT NOT NULL',
       publish_at:'INT',
       category:'INT',//0:normal; 1:ei; 2:sci;
       magazine:'INT'//0:normal; 1:core 2:supercore

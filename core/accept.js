@@ -336,10 +336,9 @@ module.exports=function(req,res,next){
             出版日期:false,
             期刊级别:false,
             收录类别:false,
-            作者:false,
             负责人:false
           }
-          const head='ABCDE'
+          const head='ABCD'
           for(let i=0;i<head.length;++i){
             let index=`${head[i]}1`
             for(let j=0;j<head.length;++j){
@@ -353,21 +352,15 @@ module.exports=function(req,res,next){
           let row=2
           let result=[]
           while(flag){
-            if(sheet[`${fields['作者']}${row}`] == undefined){
+            if(sheet[`${fields['负责人']}${row}`] == undefined){
               flag=false
               break
             }
-            let author=sheet[`${fields['作者']}${row}`].v
             const host=sheet[`${fields['负责人']}${row}`] ? sheet[`${fields['负责人']}${row}`].v : ''
             const cat=sheet[`${fields['收录类别']}${row}`] ? sheet[`${fields['收录类别']}${row}`].v : undefined
             const level=sheet[`${fields['期刊级别']}${row}`] ? sheet[`${fields['期刊级别']}${row}`].v : undefined
             const publish=sheet[`${fields['出版日期']}${row}`] ? new Date(sheet[`${fields['出版日期']}${row}`].v) : 0
-            author=author.split(',')
-            for(let i=0;i<author.length;++i){
-              author[i]=author[i].match(/\（(.*?)\）/) ? author[i].match(/\（(.*?)\）/)[1] : undefined
-            }
             let sql={
-              author:author,
               host:host,
               publish_at:publish.getTime(),
               category:cat ? cat.includes('SCI') ? 2 : (cat.includes('EI') ? 1 : 0) : 0,
@@ -487,7 +480,7 @@ module.exports=function(req,res,next){
               break
             }
             const teacher=sheet[`${fields['指导教师']}${row}`].v
-            const year=sheet[`${fields['获奖年份']}${row}`] ? new Date(sheet[`${fields['获奖年份']}${row}`].v) : 0
+            const year=sheet[`${fields['获奖年份']}${row}`] ? sheet[`${fields['获奖年份']}${row}`].v : 0
             let sql={
               teacher:teacher,
               year:year ? year : -1
@@ -681,8 +674,10 @@ module.exports=function(req,res,next){
         for(let i=0;i<head.length;++i)
           if(!Object.values(fields)) return Promise.reject(3)
         const res_col_num='G'
-        people['!ref']=`${people['!ref'].substr(0,3)}G${people['!ref'].substr(4,people['!ref'].length)}`
+        const sub_col_num='H'
+        people['!ref']=`${people['!ref'].substr(0,3)}H${people['!ref'].substr(4,people['!ref'].length)}`
         people.G1={t:'s',v:'分数'}
+        people.H1={t:'s',v:'分项分数'}
         let result=[]
         let max_row=parseInt(people['!ref'].substr(4,people['!ref'].length))
         for(let row_num=2;row_num<=max_row;++row_num){
@@ -690,6 +685,7 @@ module.exports=function(req,res,next){
           result.push(select('TablePeople',['*'],`id='${id}'`)
             .then(async rows=>{
               let mark=0
+              let sub_mark=[]
               let _row_=row_num
               if(!rows.length) return
               const row=rows[0]
@@ -699,17 +695,21 @@ module.exports=function(req,res,next){
                   const weight=1/6
 
                   // Teaching hours
-                  mark+=weight * await getTeachMark(64)
+                  let teach_mark=await getTeachMark(64)
+                  mark+=weight * teach_mark
+                  sub_mark.push(teach_mark || 0)
 
                   // Projects
                   const proj_base=1
                   let proj=await getProject(0)
                   mark+=weight * proj/proj_base
+                  sub_mark.push(proj/proj_base || 0)
 
                   // Income
                   const income_base=120
                   let inc = await getIncome()
                   mark+=weight * inc/income_base
+                  sub_mark.push(inc/income_base || 0)
 
                   // Teach Award
                   let teach_award=0
@@ -742,6 +742,7 @@ module.exports=function(req,res,next){
                   })
                   teach_award+=spe_teach_award/spe_teach_award_base
                   mark+=teach_award>1 ? (weight*teach_award) : 0
+                  sub_mark.push(teach_award>1 ? teach_award : 0 )
 
                   // Research Award
                   let research_award=0
@@ -769,25 +770,31 @@ module.exports=function(req,res,next){
                   })
                   research_award+=spe_teach_award/spe_research_award_base
                   mark+=research_award>1 ? (weight*research_award) : 0
+                  sub_mark.push(research_award>1 ? research_award: 0 || 0)
 
                   // Group Activity
                   mark+=weight * 1
+                  sub_mark.push(1 || 0)
                 }else if(row.level>4 && row.level<8){
                   // 教学科研5-7
                   const weight=1/6
 
                   // Teaching hours
-                  mark+=weight * await getTeachMark(64)
+                  let teach_mark=await getTeachMark(64)
+                  mark+=weight * teach_mark
+                  sub_mark.push(teach_mark || 0)
 
                   // Projects
                   const proj_base=1
                   let proj=await getProject(0)
                   mark+=weight * proj/proj_base
+                  sub_mark.push(proj/proj_base || 0)
 
                   // Income
                   const income_base=90
                   let inc = await getIncome()
                   mark+=weight * inc/income_base
+                  sub_mark.push(inc/income_base || 0)
 
                   // Teach Award
                   let teach_award=0
@@ -821,6 +828,7 @@ module.exports=function(req,res,next){
                   })
                   teach_award+=spe_teach_award/spe_teach_award_base
                   mark+=teach_award>1 ? (weight*teach_award) : 0
+                  sub_mark.push(teach_award>1 ? teach_award : 0 || 0)
 
                   // Research Award
                   let research_award=0
@@ -848,25 +856,31 @@ module.exports=function(req,res,next){
                   })
                   research_award+=spe_teach_award/spe_research_award_base
                   mark+=research_award>1 ? (weight*research_award) : 0
+                  sub_mark.push(research_award>1 ? research_award: 0 || 0)
 
                   // Group Activity
                   mark+=weight * 1
+                  sub_mark.push(1 || 0)
                 }else if(row.level>7 && row.level<11){
                   // 教学科研8-10
                   const weight=1/4
 
                   // Teaching hours
-                  mark+=weight * await getTeachMark(64)
+                  let teach_mark=await getTeachMark(64)
+                  mark+=weight * teach_mark
+                  sub_mark.push(teach_mark || 0)
 
                   // Projects
                   const proj_base=1
                   let proj=await getProject(1)
-                  mark+=0.5 * weight * proj/proj_base
+                  mark+=weight * proj/proj_base
+                  sub_mark.push(proj/proj_base || 0)
 
                   // Income
                   const income_base=60
                   let inc = await getIncome()
-                  mark+=0.5 * weight * inc/income_base
+                  mark+=weight * inc/income_base
+                  sub_mark[sub_mark.length-1]+=(inc/income_base || 0)
 
                   // Award
                   let award=0
@@ -912,9 +926,12 @@ module.exports=function(req,res,next){
                   })
                   award+=spe_award/spe_award_base
                   mark+=weight * award
+                  sub_mark.push(award || 0)
+                  console.log(sub_mark)
 
                   // Group Activity
                   mark+=weight * 1
+                  sub_mark.push(1 || 0)
                 }else{
                   mark=0
                 }
@@ -924,13 +941,17 @@ module.exports=function(req,res,next){
                   const weight=1/6
 
                   // Teaching hours
-                  mark+=weight * await getTeachMark(192)
+                  let teach_mark=await getTeachMark(192)
+                  mark+=weight * teach_mark
+                  sub_mark.push(teach_mark || 0)
 
                   // Teaching Reformation
                   mark+=weight * 0
+                  sub_mark.push(0 || 0)
 
                   // Undergraduate Teaching Experiment
                   mark+=weight * 0
+                  sub_mark.push(0 || 0)
 
                   // Award
                   let award=0
@@ -982,26 +1003,33 @@ module.exports=function(req,res,next){
                   award+=spe_award/spe_award_base
                   award*=0.5
                   mark+=award>1 ? (weight*research_award) : 0
+                  sub_mark.push(award>1 ? research_award : 0 || 0)
 
                   // Income
                   const income_base=30
                   let inc = await getIncome()
                   mark+=weight * inc/income_base
+                  sub_mark.push(inc/income_base || 0)
 
                   // Group Activity
                   mark+=weight * 1
+                  sub_mark.push(1 || 0)
                 }else if(row.level>4 && row.level<8){
                   // 教学5-7
                   const weight=1/6
 
                   // Teaching hours
-                  mark+=weight * await getTeachMark(144)
+                  let teach_mark=await getTeachMark(144)
+                  mark+=weight * teach_mark
+                  sub_mark.push(teach_mark || 0)
 
                   // Teaching Reformation
                   mark+=weight * 0
+                  sub_mark.push(0 || 0)
 
                   // Undergraduate Teaching Experiment
                   mark+=weight * 0
+                  sub_mark.push(0 || 0)
 
                   // Award
                   let award=0
@@ -1053,14 +1081,17 @@ module.exports=function(req,res,next){
                   award+=spe_award/spe_award_base
                   award*=0.5
                   mark+=award>1 ? (weight*research_award) : 0
+                  sub_mark.push(award>1 ? research_award : 0 || 0)
 
                   // Income
                   const income_base=20
                   let inc = await getIncome()
                   mark+=weight * inc/income_base
+                  sub_mark.push(inc/income_base || 0)
 
                   // Group Activity
                   mark+=weight * 1
+                  sub_mark.push(1 || 0)
                 }else{
                   mark=0
                 }
@@ -1070,17 +1101,21 @@ module.exports=function(req,res,next){
                   const weight=1/5
 
                   // Teaching hours
-                  mark+=weight * await getTeachMark(24)
+                  let teach_mark=await getTeachMark(24)
+                  mark+=weight * teach_mark
+                  sub_mark.push(teach_mark || 0)
 
                   // Projects
                   const proj_base=1
                   let proj=await getProject(1)
                   mark+=weight * proj/proj_base
+                  sub_mark.push(proj/proj_base || 0)
 
                   // Income
                   const income_base=180
                   let inc = await getIncome()
                   mark+=weight * inc/income_base
+                  sub_mark.push(inc/income_base || 0)
 
                   // Research Award
                   let research_award=0
@@ -1114,25 +1149,31 @@ module.exports=function(req,res,next){
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
                   mark+=research_award>1 ? (weight*research_award) : 0
+                  sub_mark.push(research_award>1 ? research_award : 0 || 0)
 
                   // Group Activity
                   mark+=weight * 1
+                  sub_mark.push(1 || 0)
                 }else if(row.level>4 && row.level<8){
                   // 科研5-7
                   const weight=1/5
 
                   // Teaching hours
-                  mark+=weight * await getTeachMark(24)
+                  let teach_mark=await getTeachMark(24)
+                  mark+=weight * teach_mark
+                  sub_mark.push(teach_mark || 0)
 
                   // Projects
                   const proj_base=1
                   let proj=await getProject(0)
                   mark+=weight * proj/proj_base
+                  sub_mark.push(proj/proj_base || 0)
 
                   // Income
                   const income_base=120
                   let inc = await getIncome()
                   mark+=weight * inc/income_base
+                  sub_mark.push(inc/income_base || 0)
 
                   // Research Award
                   let research_award=0
@@ -1167,25 +1208,31 @@ module.exports=function(req,res,next){
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
                   mark+=research_award>1 ? (weight*research_award) : 0
+                  sub_mark.push(research_award>1 ? research_award : 0 || 0)
 
                   // Group Activity
                   mark+=weight * 1
+                  sub_mark.push(1 || 0)
                 }else if(row.level>7 && row.level<11){
                   // 科研8-10
                   const weight=1/5
 
                   // Teaching hours
-                  mark+=weight * await getTeachMark(24)
+                  let teach_mark=await getTeachMark(24)
+                  mark+=weight * teach_mark
+                  sub_mark.push(teach_mark || 0)
 
                   // Projects
                   const proj_base=1
                   let proj=await getProject(0)
                   mark+=weight * proj/proj_base
+                  sub_mark.push(proj/proj_base || 0)
 
                   // Income
                   const income_base=75
                   let inc = await getIncome()
                   mark+=weight * inc/income_base
+                  sub_mark.push(inc/income_base || 0)
 
                   // Research Award
                   let research_award=0
@@ -1214,9 +1261,11 @@ module.exports=function(req,res,next){
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
                   mark+=research_award>1 ? (weight*research_award) : 0
+                  sub_mark.push(research_award>1 ? research_award : 0 || 0)
 
                   // Group Activity
                   mark+=weight * 1
+                  sub_mark.push(1 || 0)
                 }else{
                   mark=0
                 }
@@ -1225,6 +1274,7 @@ module.exports=function(req,res,next){
               }
 
               people[`G${_row_}`]={t:'n',v:mark}
+              people[`H${_row_}`]={t:'s',v:JSON.stringify(sub_mark)}
 
               function getTeachMark(base){
                 return getUgHours()
@@ -1284,7 +1334,7 @@ module.exports=function(req,res,next){
               }
 
               function getPaper(){
-                return select('TablePaper',['category','magazine'],`author LIKE '%${id}%' and magazine>0`)
+                return select('TablePaper',['category','magazine'],`host='${row.name}' and magazine>0`)
                 .then(rows=>{
                   let result=0
                   rows.forEach(r=>{
