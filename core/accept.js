@@ -117,6 +117,7 @@ module.exports=function(req,res,next){
         .then(()=>{return drop('TableResearchAward')})
         .then(populateResearchAward)
         .then(()=>{console.log('research award populated')})
+        .then(()=>{return drop('TableStudentAward')})
         .then(populateStudentAward)
         .then(()=>{console.log('student award populated')})
 
@@ -1369,7 +1370,6 @@ module.exports=function(req,res,next){
                     if(Object.keys(prop).includes(rows[i].level.toString()))
                       if(Object.keys(prop[rows[i].level]).includes(rows[i].award.toString()))
                         if(JSON.parse(rows[i].participant).indexOf(row.name) < prop[rows[i].level][rows[i].award]) ++result
-                  if(row.name=='盛庆红') console.log(result)
                   return result
                 })
               }
@@ -1403,8 +1403,8 @@ module.exports=function(req,res,next){
                 .then(rows=>{
                   let result=0
                   for(let i=0;i<rows.length;++i)
-                    if(Object.keys(prop).includes(rows[i].level))
-                      if(Object.keys(prop[rows[i].level]).includes(rows[i].award))
+                    if(Object.keys(prop).includes(rows[i].level.toString()))
+                      if(Object.keys(prop[rows[i].level]).includes(rows[i].award.toString()))
                         if(JSON.parse(rows[i].participant).indexOf(row.name) < prop[rows[i].level][rows[i].award]) ++result
                   return result
                 })
