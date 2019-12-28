@@ -294,11 +294,10 @@ module.exports=function(req,res,next){
         function populateIncome(){
           let sheet=wb.Sheets['项目经费到帐']
           let fields={
-            项目代码:false,
             负责人:false,
             金额:false
           }
-          const head='ABC'
+          const head='AB'
           for(let i=0;i<head.length;++i){
             let index=`${head[i]}1`
             for(let j=0;j<head.length;++j){
@@ -312,15 +311,13 @@ module.exports=function(req,res,next){
           let row=2
           let result=[]
           while(flag){
-            if(sheet[`${fields['项目代码']}${row}`] == undefined){
+            if(sheet[`${fields['负责人']}${row}`] == undefined){
               flag=false
               break
             }
-            const project=sheet[`${fields['项目代码']}${row}`].v
-            const host=sheet[`${fields['负责人']}${row}`] ? sheet[`${fields['负责人']}${row}`].v : ''
+            const host=sheet[`${fields['负责人']}${row}`].v
             const amount=sheet[`${fields['金额']}${row}`] ? sheet[`${fields['金额']}${row}`].v : 0
             let sql={
-              project:project,
               host:host,
               amount:amount
             }
@@ -714,7 +711,7 @@ module.exports=function(req,res,next){
                   // Teach Award
                   let teach_award=0
                   const elite_course_base=1
-                  let elite_course=await getEliteCourse({level:0,min_pos:3})
+                  let elite_course=await getEliteCourse({level:0,min_pos:1})
                   teach_award+=elite_course/elite_course_base
                   const thesis_award_base=1
                   let thesis_award=await getThesisAward()
@@ -741,8 +738,8 @@ module.exports=function(req,res,next){
                     }
                   })
                   teach_award+=spe_teach_award/spe_teach_award_base
-                  mark+=teach_award>1 ? (weight*teach_award) : 0
-                  sub_mark.push(teach_award>1 ? teach_award : 0 )
+                  mark+=teach_award>=1 ? (weight*teach_award) : 0
+                  sub_mark.push(teach_award>=1 ? teach_award : 0 )
 
                   // Research Award
                   let research_award=0
@@ -769,8 +766,8 @@ module.exports=function(req,res,next){
                     }
                   })
                   research_award+=spe_teach_award/spe_research_award_base
-                  mark+=research_award>1 ? (weight*research_award) : 0
-                  sub_mark.push(research_award>1 ? research_award: 0 || 0)
+                  mark+=research_award>=1 ? (weight*research_award) : 0
+                  sub_mark.push(research_award>=1 ? research_award: 0 || 0)
 
                   // Group Activity
                   mark+=weight * 1
@@ -827,8 +824,8 @@ module.exports=function(req,res,next){
                     }
                   })
                   teach_award+=spe_teach_award/spe_teach_award_base
-                  mark+=teach_award>1 ? (weight*teach_award) : 0
-                  sub_mark.push(teach_award>1 ? teach_award : 0 || 0)
+                  mark+=teach_award>=1 ? (weight*teach_award) : 0
+                  sub_mark.push(teach_award>=1 ? teach_award : 0 || 0)
 
                   // Research Award
                   let research_award=0
@@ -855,8 +852,8 @@ module.exports=function(req,res,next){
                     }
                   })
                   research_award+=spe_teach_award/spe_research_award_base
-                  mark+=research_award>1 ? (weight*research_award) : 0
-                  sub_mark.push(research_award>1 ? research_award: 0 || 0)
+                  mark+=research_award>=1 ? (weight*research_award) : 0
+                  sub_mark.push(research_award>=1 ? research_award: 0 || 0)
 
                   // Group Activity
                   mark+=weight * 1
@@ -927,7 +924,6 @@ module.exports=function(req,res,next){
                   award+=spe_award/spe_award_base
                   mark+=weight * award
                   sub_mark.push(award || 0)
-                  console.log(sub_mark)
 
                   // Group Activity
                   mark+=weight * 1
@@ -1002,8 +998,8 @@ module.exports=function(req,res,next){
                   })
                   award+=spe_award/spe_award_base
                   award*=0.5
-                  mark+=award>1 ? (weight*research_award) : 0
-                  sub_mark.push(award>1 ? research_award : 0 || 0)
+                  mark+=award>=1 ? (weight*research_award) : 0
+                  sub_mark.push(award>=1 ? research_award : 0 || 0)
 
                   // Income
                   const income_base=30
@@ -1080,8 +1076,8 @@ module.exports=function(req,res,next){
                   })
                   award+=spe_award/spe_award_base
                   award*=0.5
-                  mark+=award>1 ? (weight*research_award) : 0
-                  sub_mark.push(award>1 ? research_award : 0 || 0)
+                  mark+=award>=1 ? (weight*research_award) : 0
+                  sub_mark.push(award>=1 ? research_award : 0 || 0)
 
                   // Income
                   const income_base=20
@@ -1148,8 +1144,8 @@ module.exports=function(req,res,next){
                   })
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
-                  mark+=research_award>1 ? (weight*research_award) : 0
-                  sub_mark.push(research_award>1 ? research_award : 0 || 0)
+                  mark+=research_award>=1 ? (weight*research_award) : 0
+                  sub_mark.push(research_award>=1 ? research_award : 0 || 0)
 
                   // Group Activity
                   mark+=weight * 1
@@ -1207,8 +1203,8 @@ module.exports=function(req,res,next){
                   })
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
-                  mark+=research_award>1 ? (weight*research_award) : 0
-                  sub_mark.push(research_award>1 ? research_award : 0 || 0)
+                  mark+=research_award>=1 ? (weight*research_award) : 0
+                  sub_mark.push(research_award>=1 ? research_award : 0 || 0)
 
                   // Group Activity
                   mark+=weight * 1
@@ -1260,8 +1256,8 @@ module.exports=function(req,res,next){
                   })
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
-                  mark+=research_award>1 ? (weight*research_award) : 0
-                  sub_mark.push(research_award>1 ? research_award : 0 || 0)
+                  mark+=research_award>=1 ? (weight*research_award) : 0
+                  sub_mark.push(research_award>=1 ? research_award : 0 || 0)
 
                   // Group Activity
                   mark+=weight * 1
@@ -1281,7 +1277,7 @@ module.exports=function(req,res,next){
                 .then(ug_hours=>{
                   return getPgHours()
                   .then(pg_hours=>{
-                    return (ug_hours+pg_hours)/base
+                    return (ug_hours+pg_hours)/(3*base*(row.employed_til-row.employed_from)/94521600000)
                   })
                 })
               }
@@ -1314,7 +1310,7 @@ module.exports=function(req,res,next){
 
               function getProject(min_lvl){
                 min_lvl=min_lvl | 0
-                return select('TableProject',[1],`host='${id}' AND started_at > ${row.employed_from} AND finished_at < ${row.employed_til} AND level >= ${min_lvl}`)
+                return select('TableProject',[1],`host='${id}' AND started_at > ${row.employed_from} AND level >= ${min_lvl}`)
                 .then(rows=>{
                   return rows.length
                 })
@@ -1325,16 +1321,14 @@ module.exports=function(req,res,next){
                 .then(rows=>{
                   let inc_stack=0
                   for(let i=0;i<rows.length;++i){
-                    let tmp=parseInt(rows[i].hours)
-                    if(isNaN(tmp)) continue
-                    inc_stack+=tmp
+                    inc_stack+=rows[i].amount
                   }
                   return inc_stack
                 })
               }
 
               function getPaper(){
-                return select('TablePaper',['category','magazine'],`host='${row.name}' and magazine>0`)
+                return select('TablePaper',['category','magazine'],`host='${row.name}'`)
                 .then(rows=>{
                   let result=0
                   rows.forEach(r=>{
@@ -1351,7 +1345,7 @@ module.exports=function(req,res,next){
                 if(!prop) prop={}
                 const min_lvl=prop.level | 0
                 const min_pos=prop.position | 1
-                return select('TableEliteCourse',['host'],`host LIKE '%${row.name}%' AND level > ${min_lvl}`)
+                return select('TableEliteCourse',['host'],`host LIKE '%${row.name}%' AND level >= ${min_lvl}`)
                 .then(rows=>{
                   let result=0
                   for(let i=0;i<rows.length;++i)
@@ -1361,7 +1355,7 @@ module.exports=function(req,res,next){
               }
 
               function getThesisAward(){
-                return select('TableThesisAward',[1],`teacher = '${id}'`)
+                return select('TableThesisAward',[1],`teacher = '${row.name}'`)
                 .then(rows=>{
                   return rows.length
                 })
@@ -1372,9 +1366,10 @@ module.exports=function(req,res,next){
                 .then(rows=>{
                   let result=0
                   for(let i=0;i<rows.length;++i)
-                    if(Object.keys(prop).includes(rows[i].level))
-                      if(Object.keys(prop[rows[i].level]).includes(rows[i].award))
+                    if(Object.keys(prop).includes(rows[i].level.toString()))
+                      if(Object.keys(prop[rows[i].level]).includes(rows[i].award.toString()))
                         if(JSON.parse(rows[i].participant).indexOf(row.name) < prop[rows[i].level][rows[i].award]) ++result
+                  if(row.name=='盛庆红') console.log(result)
                   return result
                 })
               }

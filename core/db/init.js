@@ -45,8 +45,7 @@ const schema=[
   {
     name:'TableIncome',
     cols:{
-      project:'TEXT NOT NULL',
-      host:'TEXT',
+      host:'TEXT NOT NULL',
       amount:'INT',
     }
   },
