@@ -739,8 +739,8 @@ module.exports=function(req,res,next){
                     }
                   })
                   teach_award+=spe_teach_award/spe_teach_award_base
-                  mark+=teach_award>=1 ? (weight*teach_award) : 0
-                  sub_mark.push(teach_award>=1 ? teach_award : 0 )
+                  mark+=weight*teach_award
+                  sub_mark.push(teach_award)
 
                   // Research Award
                   let research_award=0
@@ -767,8 +767,8 @@ module.exports=function(req,res,next){
                     }
                   })
                   research_award+=spe_teach_award/spe_research_award_base
-                  mark+=research_award>=1 ? (weight*research_award) : 0
-                  sub_mark.push(research_award>=1 ? research_award: 0 || 0)
+                  mark+=weight*research_award
+                  sub_mark.push(research_award)
 
                   // Group Activity
                   mark+=weight * 1
@@ -825,8 +825,8 @@ module.exports=function(req,res,next){
                     }
                   })
                   teach_award+=spe_teach_award/spe_teach_award_base
-                  mark+=teach_award>=1 ? (weight*teach_award) : 0
-                  sub_mark.push(teach_award>=1 ? teach_award : 0 || 0)
+                  mark+=weight*teach_award
+                  sub_mark.push(teach_award)
 
                   // Research Award
                   let research_award=0
@@ -853,8 +853,8 @@ module.exports=function(req,res,next){
                     }
                   })
                   research_award+=spe_teach_award/spe_research_award_base
-                  mark+=research_award>=1 ? (weight*research_award) : 0
-                  sub_mark.push(research_award>=1 ? research_award: 0 || 0)
+                  mark+=weight*research_award
+                  sub_mark.push(research_award)
 
                   // Group Activity
                   mark+=weight * 1
@@ -999,8 +999,8 @@ module.exports=function(req,res,next){
                   })
                   award+=spe_award/spe_award_base
                   award*=0.5
-                  mark+=award>=1 ? (weight*research_award) : 0
-                  sub_mark.push(award>=1 ? research_award : 0 || 0)
+                  mark+=weight*research_award
+                  sub_mark.push(research_award)
 
                   // Income
                   const income_base=30
@@ -1077,8 +1077,8 @@ module.exports=function(req,res,next){
                   })
                   award+=spe_award/spe_award_base
                   award*=0.5
-                  mark+=award>=1 ? (weight*research_award) : 0
-                  sub_mark.push(award>=1 ? research_award : 0 || 0)
+                  mark+=weight*research_award
+                  sub_mark.push(research_award)
 
                   // Income
                   const income_base=20
@@ -1145,8 +1145,8 @@ module.exports=function(req,res,next){
                   })
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
-                  mark+=research_award>=1 ? (weight*research_award) : 0
-                  sub_mark.push(research_award>=1 ? research_award : 0 || 0)
+                  mark+=weight*research_award
+                  sub_mark.push(research_award)
 
                   // Group Activity
                   mark+=weight * 1
@@ -1204,8 +1204,8 @@ module.exports=function(req,res,next){
                   })
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
-                  mark+=research_award>=1 ? (weight*research_award) : 0
-                  sub_mark.push(research_award>=1 ? research_award : 0 || 0)
+                  mark+=weight*research_award
+                  sub_mark.push(research_award)
 
                   // Group Activity
                   mark+=weight * 1
@@ -1257,8 +1257,8 @@ module.exports=function(req,res,next){
                   })
                   research_award+=spe_research_award/spe_research_award_base
                   research_award*=0.5
-                  mark+=research_award>=1 ? (weight*research_award) : 0
-                  sub_mark.push(research_award>=1 ? research_award : 0 || 0)
+                  mark+=weight*research_award
+                  sub_mark.push(research_award)
 
                   // Group Activity
                   mark+=weight * 1
