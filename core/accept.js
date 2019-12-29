@@ -11,6 +11,8 @@ const xlsx=require('xlsx')
 const required_sheets=[
   "被考核人",
   "本科教学",
+  "科创",
+  "班主任",
   "研究生教学",
   "研究项目",
   "项目经费到帐",
@@ -170,13 +172,14 @@ module.exports=function(req,res,next){
         }
 
         function populateUndergraduate(){
+          let result=[]
           let sheet=wb.Sheets['本科教学']
           let fields={
             负责人:false,
             所属学期:false,
             总课时:false
           }
-          const head='ABC'
+          let head='ABC'
           for(let i=0;i<head.length;++i){
             let index=`${head[i]}1`
             for(let j=0;j<head.length;++j){
@@ -188,7 +191,6 @@ module.exports=function(req,res,next){
             if(!Object.values(fields)) return Promise.reject(4)
           let flag=true
           let row=2
-          let result=[]
           while(flag){
             if(sheet[`${fields['总课时']}${row}`] == undefined){
               flag=false
@@ -203,6 +205,90 @@ module.exports=function(req,res,next){
               hours:hours
             }
             result.push(insert('TableUndergraduate',sql))
+            ++row
+          }
+          sheet=wb.Sheets['科创']
+          fields={
+            指导老师:false,
+            项目级别:false
+          }
+          head='AB'
+          for(let i=0;i<head.length;++i){
+            let index=`${head[i]}1`
+            for(let j=0;j<head.length;++j){
+              if(Object.keys(fields)[j]==sheet[index].v)
+                fields[sheet[index].v]=head[i]
+            }
+          }
+          for(let i=0;i<head.length;++i)
+            if(!Object.values(fields)) return Promise.reject(4)
+          flag=true
+          row=2
+          while(flag){
+            if(sheet[`${fields['指导老师']}${row}`] == undefined){
+              flag=false
+              break
+            }
+            const teacher=sheet[`${fields['指导老师']}${row}`].v
+            const level=sheet[`${fields['项目级别']}${row}`] ? sheet[`${fields['项目级别']}${row}`].v : undefined
+            let sql={
+              host:teacher,
+              term:2019.3,
+              hours:level ? ((level.includes('校') ? 0.5 : (level.includes('省') ? 0.75 : (level.includes('国家') ? 1 : 0)))*12) : 0
+            }
+            result.push(
+              select('TablePeople',['id'],`name='${teacher}'`)
+              .then(rows=>{
+                if(rows.length) return rows[0].id
+                else return ''
+              })
+              .then(id=>{
+                sql.host=id
+                return insert('TableUndergraduate',sql)
+              })
+            )
+            ++row
+          }
+          sheet=wb.Sheets['班主任']
+          fields={
+            姓名:false,
+            折算学时:false
+          }
+          head='AB'
+          for(let i=0;i<head.length;++i){
+            let index=`${head[i]}1`
+            for(let j=0;j<head.length;++j){
+              if(Object.keys(fields)[j]==sheet[index].v)
+                fields[sheet[index].v]=head[i]
+            }
+          }
+          for(let i=0;i<head.length;++i)
+            if(!Object.values(fields)) return Promise.reject(4)
+          flag=true
+          row=2
+          while(flag){
+            if(sheet[`${fields['姓名']}${row}`] == undefined){
+              flag=false
+              break
+            }
+            const teacher=sheet[`${fields['姓名']}${row}`].v
+            const hours=sheet[`${fields['折算学时']}${row}`] ? sheet[`${fields['折算学时']}${row}`].v : undefined
+            let sql={
+              host:teacher,
+              term:2019.4,
+              hours:Number.isInteger(hours) ? hours  : 0
+            }
+            result.push(
+              select('TablePeople',['id'],`name='${teacher}'`)
+              .then(rows=>{
+                if(rows.length) return rows[0].id
+                else return ''
+              })
+              .then(id=>{
+                sql.host=id
+                return insert('TableUndergraduate',sql)
+              })
+            )
             ++row
           }
           return Promise.all(result)
