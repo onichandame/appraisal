@@ -759,9 +759,11 @@ module.exports=function(req,res,next){
           if(!Object.values(fields)) return Promise.reject(3)
         const res_col_num='G'
         const sub_col_num='H'
-        people['!ref']=`${people['!ref'].substr(0,3)}H${people['!ref'].substr(4,people['!ref'].length)}`
+        const lab_col_num='I'
+        people['!ref']=`${people['!ref'].substr(0,3)}I${people['!ref'].substr(4,people['!ref'].length)}`
         people.G1={t:'s',v:'分数'}
         people.H1={t:'s',v:'分项分数'}
+        people.I1={t:'s',v:'必要项已完成'}
         let result=[]
         let max_row=parseInt(people['!ref'].substr(4,people['!ref'].length))
         for(let row_num=2;row_num<=max_row;++row_num){
@@ -770,6 +772,7 @@ module.exports=function(req,res,next){
             .then(async rows=>{
               let mark=0
               let sub_mark=[]
+              let done_must='True'
               let _row_=row_num
               if(!rows.length) return
               const row=rows[0]
@@ -827,6 +830,7 @@ module.exports=function(req,res,next){
                   teach_award+=spe_teach_award/spe_teach_award_base
                   mark+=weight*teach_award
                   sub_mark.push(teach_award)
+                  if(teach_award<1) done_must='False'
 
                   // Research Award
                   let research_award=0
@@ -855,6 +859,7 @@ module.exports=function(req,res,next){
                   research_award+=spe_teach_award/spe_research_award_base
                   mark+=weight*research_award
                   sub_mark.push(research_award)
+                  if(research_award<1) done_must='False'
 
                   // Group Activity
                   mark+=weight * 1
@@ -913,6 +918,7 @@ module.exports=function(req,res,next){
                   teach_award+=spe_teach_award/spe_teach_award_base
                   mark+=weight*teach_award
                   sub_mark.push(teach_award)
+                  if(teach_award<1) done_must='False'
 
                   // Research Award
                   let research_award=0
@@ -941,6 +947,7 @@ module.exports=function(req,res,next){
                   research_award+=spe_teach_award/spe_research_award_base
                   mark+=weight*research_award
                   sub_mark.push(research_award)
+                  if(research_award<1) done_must='False'
 
                   // Group Activity
                   mark+=weight * 1
@@ -1087,6 +1094,7 @@ module.exports=function(req,res,next){
                   award*=0.5
                   mark+=weight*research_award
                   sub_mark.push(research_award)
+                  if(award<1) done_must='False'
 
                   // Income
                   const income_base=30
@@ -1165,6 +1173,7 @@ module.exports=function(req,res,next){
                   award*=0.5
                   mark+=weight*research_award
                   sub_mark.push(research_award)
+                  if(award<1) done_must='False'
 
                   // Income
                   const income_base=20
@@ -1233,6 +1242,7 @@ module.exports=function(req,res,next){
                   research_award*=0.5
                   mark+=weight*research_award
                   sub_mark.push(research_award)
+                  if(research_award<1) done_must='False'
 
                   // Group Activity
                   mark+=weight * 1
@@ -1292,6 +1302,7 @@ module.exports=function(req,res,next){
                   research_award*=0.5
                   mark+=weight*research_award
                   sub_mark.push(research_award)
+                  if(research_award<1) done_must='False'
 
                   // Group Activity
                   mark+=weight * 1
@@ -1358,6 +1369,7 @@ module.exports=function(req,res,next){
 
               people[`G${_row_}`]={t:'n',v:mark}
               people[`H${_row_}`]={t:'s',v:JSON.stringify(sub_mark)}
+              people[`I${_row_}`]={t:'s',v:JSON.stringify(done_must)}
 
               function getTeachMark(base){
                 return getUgHours()
