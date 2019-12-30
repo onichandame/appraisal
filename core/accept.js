@@ -1200,9 +1200,7 @@ module.exports=function(req,res,next){
                   // Projects
                   const proj_base=1
                   let proj=await getProject(1)
-                  if(id=='70204326') console.log(mark)
                   mark+=weight * proj/proj_base
-                  if(id=='70204326') console.log(mark)
                   sub_mark.push(proj/proj_base || 0)
 
                   // Income
