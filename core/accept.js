@@ -198,7 +198,7 @@ module.exports=function(req,res,next){
             }
             const hours=sheet[`${fields['总课时']}${row}`].v
             const term=sheet[`${fields['所属学期']}${row}`].v
-            const host=sheet[`${fields['负责人']}${row}`] ? sheet[`${fields['负责人']}${row}`].v.match(/\[(.*?)\]/)[1] : undefined
+            const host=(sheet[`${fields['负责人']}${row}`] && sheet[`${fields['负责人']}${row}`].v.match(/\[(.*?)\]/)) ? sheet[`${fields['负责人']}${row}`].v.match(/\[(.*?)\]/)[1] : undefined
             let sql={
               host:host,
               term:term,
