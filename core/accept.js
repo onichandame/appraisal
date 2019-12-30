@@ -1200,7 +1200,9 @@ module.exports=function(req,res,next){
                   // Projects
                   const proj_base=1
                   let proj=await getProject(1)
+                  if(id=='70204326') console.log(mark)
                   mark+=weight * proj/proj_base
+                  if(id=='70204326') console.log(mark)
                   sub_mark.push(proj/proj_base || 0)
 
                   // Income
@@ -1409,7 +1411,7 @@ module.exports=function(req,res,next){
 
               function getProject(min_lvl){
                 min_lvl=min_lvl | 0
-                return select('TableProject',[1],`host='${id}' AND started_at > ${row.employed_from} AND level >= ${min_lvl}`)
+                return select('TableProject',[1],`host='${id}' AND started_at >= ${row.employed_from} AND level >= ${min_lvl}`)
                 .then(rows=>{
                   return rows.length
                 })
