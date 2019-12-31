@@ -32,7 +32,7 @@ function mount(){
       if(e.code=='ENOENT') fn=path.resolve(__dirname,'template.xlsx')
       else throw e
     })
-    .then(async ()=>{res.download(fn,'航天学院2017-2019年度聘期考核工作量统计表'+await fsp.stat(fn).then(stat=>{return `${stat.birthtime.getFullYear()}_${stat.birthtime.getMonth()+1}_${stat.birthtime.getDate()}`})+'.xlsx')})
+    .then(async ()=>{res.download(fn,'航天学院2017-2019年度聘期考核工作量统计表'+await fsp.stat(fn).then(stat=>{return `${stat.birthtime.getFullYear()}_${stat.birthtime.getMonth()+1}_${stat.birthtime.getDate()}-${stat.birthtime.getHours()}${stat.birthtime.getMinutes()}${stat.birthtime.getSeconds()}`})+'.xlsx')})
   })
 
   app.use('/readme',(req,res)=>{
