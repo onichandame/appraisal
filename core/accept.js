@@ -760,10 +760,11 @@ module.exports=function(req,res,next){
         const res_col_num='G'
         const sub_col_num='H'
         const lab_col_num='I'
-        people['!ref']=`${people['!ref'].substr(0,3)}I${people['!ref'].substr(4,people['!ref'].length)}`
+        people['!ref']=`${people['!ref'].substr(0,3)}J${people['!ref'].substr(4,people['!ref'].length)}`
         people.G1={t:'s',v:'分数'}
         people.H1={t:'s',v:'分项分数'}
         people.I1={t:'s',v:'必要项已完成'}
+        people.J1={t:'s',v:'每年总课时小于32'}
         let result=[]
         let max_row=parseInt(people['!ref'].substr(4,people['!ref'].length))
         for(let row_num=2;row_num<=max_row;++row_num){
@@ -773,6 +774,11 @@ module.exports=function(req,res,next){
               let mark=0
               let sub_mark=[]
               let done_must='True'
+              let hour_under_32_every_year= await getUgHours(2017) + await getPgHours(2017) < 32 &&
+                                            await getUgHours(2018) + await getPgHours(2018) < 32 &&
+                                            await getUgHours(2019) + await getPgHours(2019) < 32 ?
+                                            'True' :
+                                            'False'
               let _row_=row_num
               if(!rows.length) return
               const row=rows[0]
@@ -1370,6 +1376,7 @@ module.exports=function(req,res,next){
               people[`G${_row_}`]={t:'n',v:mark}
               people[`H${_row_}`]={t:'s',v:JSON.stringify(sub_mark)}
               people[`I${_row_}`]={t:'s',v:JSON.stringify(done_must)}
+              people[`J${_row_}`]={t:'s',v:JSON.stringify(hour_under_32_every_year)}
 
               function getTeachMark(base){
                 return getUgHours()
@@ -1381,8 +1388,8 @@ module.exports=function(req,res,next){
                 })
               }
 
-              function getUgHours(){
-                return select('TableUndergraduate',['hours'],`host='${id}'`)
+              function getUgHours(year){
+                return select('TableUndergraduate',['hours'],`host='${id}'${year ? ` AND term LIKE '%${year}%'` : ''}`)
                 .then(rows=>{
                   let ug_mark=0
                   for(let i=0;i<rows.length;++i){
@@ -1394,8 +1401,8 @@ module.exports=function(req,res,next){
                 })
               }
 
-              function getPgHours(){
-                return select('TablePostgraduate',['hours'],`host='${id}'`)
+              function getPgHours(year){
+                return select('TablePostgraduate',['hours'],`host='${id}'${year ? `AND term LIKE '%${year}%'` : ''}`)
                 .then(rows=>{
                   let ug_mark=0
                   for(let i=0;i<rows.length;++i){

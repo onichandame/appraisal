@@ -3,7 +3,7 @@ const express = require('express')
 const cookieparser=require('cookie-parser')
 const fs=require('fs')
 const fsp=fs.promises
-const checkpath=require('checkpath')
+const checkpath=require('checkpath').default
 
 const init=require(path.resolve(__dirname,'core','init.js'))
 
