@@ -795,26 +795,25 @@ module.exports=function(req,res,next){
                   // Projects
                   const proj_base=1
                   let proj=await getProject(0)
-                  mark+=weight * proj/proj_base
-                  sub_mark.push(proj/proj_base || 0)
+                  proj = getMark(proj, proj_base)
+                  mark+=weight * proj
+                  sub_mark.push(proj || 0)
 
                   // Income
                   const income_base=120
                   let inc = await getIncome()
-                  mark+=weight * inc/income_base
-                  sub_mark.push(inc/income_base || 0)
+                  inc = getMark(inc, income_base)
+                  mark+=weight * inc
+                  sub_mark.push(inc || 0)
 
                   // Teach Award
                   let teach_award=0
                   const elite_course_base=1
                   let elite_course=await getEliteCourse({level:0,min_pos:1})
-                  teach_award+=elite_course/elite_course_base
                   const thesis_award_base=1
                   let thesis_award=await getThesisAward()
-                  teach_award+=thesis_award/thesis_award_base
                   const student_award_base=1
                   let student_award=await getStudentAward()
-                  teach_award+=student_award/student_award_base
                   const spe_teach_award_base=1
                   let spe_teach_award=await getTeachAward({
                     0:{
@@ -833,22 +832,21 @@ module.exports=function(req,res,next){
                       3:5
                     }
                   })
-                  teach_award+=spe_teach_award/spe_teach_award_base
-                  mark+=weight*teach_award
+                  teach_award = getMark([elite_course, thesis_award, student_award, spe_teach_award], [elite_course_base, thesis_award_base, student_award_base, spe_teach_award_base], true)
+                  mark+=weight * teach_award
                   sub_mark.push(teach_award)
                   if(teach_award<1) done_must='False'
 
                   // Research Award
                   let research_award=0
                   const research_paper_base=16
-                  let research_papers=await getPaper()
-                  research_award+=research_papers/research_paper_base
+                  let research_papers=await getPaper({
+                    sci: 4
+                  })
                   const patent_base=2
                   let patent=await getPatent({min_pos:3})
-                  research_award+=patent/patent_base
                   const book_base=1
                   let book=await getBook({min_pos:3})
-                  research_award+=book/book_base
                   const spe_research_award_base=1
                   let spe_research_award=await getResearchAward({
                     0:{
@@ -862,7 +860,7 @@ module.exports=function(req,res,next){
                       3:6
                     }
                   })
-                  research_award+=spe_teach_award/spe_research_award_base
+                  research_award = getMark([research_papers, patent, book, spe_research_award], [research_paper_base, patent_base, book_base, spe_research_award_base], true)
                   mark+=weight*research_award
                   sub_mark.push(research_award)
                   if(research_award<1) done_must='False'
@@ -882,26 +880,25 @@ module.exports=function(req,res,next){
                   // Projects
                   const proj_base=1
                   let proj=await getProject(0)
-                  mark+=weight * proj/proj_base
-                  sub_mark.push(proj/proj_base || 0)
+                  proj = getMark(proj, proj_base)
+                  mark+=weight * proj
+                  sub_mark.push(proj || 0)
 
                   // Income
                   const income_base=90
                   let inc = await getIncome()
-                  mark+=weight * inc/income_base
-                  sub_mark.push(inc/income_base || 0)
+                  inc = getMark(inc, income_base)
+                  mark+=weight * inc
+                  sub_mark.push(inc || 0)
 
                   // Teach Award
                   let teach_award=0
                   const elite_course_base=1
                   let elite_course=await getEliteCourse({level:0,min_pos:2})
-                  teach_award+=elite_course/elite_course_base
                   const thesis_award_base=1
                   let thesis_award=await getThesisAward()
-                  teach_award+=thesis_award/thesis_award_base
                   const student_award_base=1
                   let student_award=await getStudentAward()
-                  teach_award+=student_award/student_award_base
                   const spe_teach_award_base=1
                   let spe_teach_award=await getTeachAward({
                     0:{
@@ -921,7 +918,7 @@ module.exports=function(req,res,next){
                       3:5
                     }
                   })
-                  teach_award+=spe_teach_award/spe_teach_award_base
+                  teach_award = getMark([elite_course, thesis_award, student_award, spe_teach_award], [elite_course_base, thesis_award_base, student_award_base, spe_teach_award_base], true)
                   mark+=weight*teach_award
                   sub_mark.push(teach_award)
                   if(teach_award<1) done_must='False'
@@ -929,14 +926,14 @@ module.exports=function(req,res,next){
                   // Research Award
                   let research_award=0
                   const research_paper_base=12
-                  let research_papers=await getPaper()
-                  research_award+=research_papers/research_paper_base
+                  let research_papers=await getPaper({
+                    sci: 2,
+                    ei: 2
+                  })
                   const patent_base=1
                   let patent=await getPatent({min_pos:3})
-                  research_award+=patent/patent_base
                   const book_base=1
                   let book=await getBook({min_pos:3})
-                  research_award+=book/book_base
                   const spe_research_award_base=1
                   let spe_research_award=await getResearchAward({
                     0:{
@@ -950,7 +947,7 @@ module.exports=function(req,res,next){
                       3:6
                     }
                   })
-                  research_award+=spe_teach_award/spe_research_award_base
+                  research_award = getMark([research_papers, patent, book, spe_research_award], [research_paper_base, patent_base, book_base, spe_research_award_base], true)
                   mark+=weight*research_award
                   sub_mark.push(research_award)
                   if(research_award<1) done_must='False'
@@ -970,26 +967,28 @@ module.exports=function(req,res,next){
                   // Projects
                   const proj_base=1
                   let proj=await getProject(1)
-                  mark+=weight * proj/proj_base
-                  sub_mark.push(proj/proj_base || 0)
+                  proj = getMark(proj, proj_base)
+                  mark+=weight * proj
+                  sub_mark.push(proj|| 0)
 
                   // Income
                   const income_base=60
                   let inc = await getIncome()
-                  mark+=weight * inc/income_base
-                  sub_mark[sub_mark.length-1]+=(inc/income_base || 0)
+                  inc = getMark(inc, income_base)
+                  mark+=weight * inc
+                  sub_mark[sub_mark.length-1]+=(inc || 0)
 
                   // Award
                   let award=0
                   const paper_base=10
-                  let papers=await getPaper()
-                  award+=papers/paper_base
+                  let papers=await getPaper({
+                    sci: 2,
+                    ei: 1
+                  })
                   const patent_base=2
                   let patent=await getPatent({min_pos:3})
-                  award+=patent/patent_base
                   const student_award_base=1
                   let student_award=await getStudentAward()
-                  award+=student_award/student_award_base
                   const spe_award_base=1
                   let spe_award=await getTeachAward({
                     0:{
@@ -1021,7 +1020,7 @@ module.exports=function(req,res,next){
                       3:7
                     }
                   })
-                  award+=spe_award/spe_award_base
+                  award = getMark([papers, patent, student_award, spe_award], [paper_base, patent_base, student_award_base, spe_award_base])
                   mark+=weight * award
                   sub_mark.push(award || 0)
 
@@ -1052,7 +1051,8 @@ module.exports=function(req,res,next){
                   // Award
                   let award=0
                   const paper_base=6
-                  let papers=await getPaper()
+                  let papers=await getPaper({
+                  })
                   award+=papers/paper_base
                   const elite_course_base=1
                   let elite_course=await getEliteCourse({level:0,min_pos:1})
@@ -1131,7 +1131,8 @@ module.exports=function(req,res,next){
                   // Award
                   let award=0
                   const paper_base=5
-                  let papers=await getPaper()
+                  let papers=await getPaper({
+                  })
                   award+=papers/paper_base
                   const elite_course_base=1
                   let elite_course=await getEliteCourse({level:0,min_pos:2})
@@ -1206,32 +1207,32 @@ module.exports=function(req,res,next){
                   // Projects
                   const proj_base=1
                   let proj=await getProject(1)
-                  mark+=weight * proj/proj_base
-                  sub_mark.push(proj/proj_base || 0)
+                  proj = getMark(proj, proj_base)
+                  mark+=weight * proj
+                  sub_mark.push(proj || 0)
 
                   // Income
                   const income_base=180
                   let inc = await getIncome()
-                  mark+=weight * inc/income_base
-                  sub_mark.push(inc/income_base || 0)
+                  inc = getMark(inc, income_base)
+                  mark+=weight * inc
+                  sub_mark.push(inc || 0)
 
                   // Research Award
                   let research_award=0
                   const paper_base=20
-                  let papers=await getPaper()
-                  research_award+=papers/paper_base
+                  let papers=await getPaper({
+                    sci: 4,
+                    ei: 2
+                  })
                   const patent_base=3
                   let patent=await getPatent({min_pos:3})
-                  research_award+=patent/patent_base
                   const book_base=1
                   let book=await getBook({min_pos:3})
-                  research_award+=book/book_base
                   const thesis_award_base=2
                   let thesis_award=await getThesisAward()
-                  research_award+=thesis_award/thesis_award_base
                   const student_award_base=1
                   let student_award=await getStudentAward()
-                  research_award+=student_award/student_award_base
                   const spe_research_award_base=1
                   let spe_research_award=await getResearchAward({
                     0:{
@@ -1244,8 +1245,7 @@ module.exports=function(req,res,next){
                       3:4
                     }
                   })
-                  research_award+=spe_research_award/spe_research_award_base
-                  research_award*=0.5
+                  research_award = getMark([papers, patent, book, thesis_award, student_award, spe_research_award], [paper_base, patent_base, book_base, thesis_award_base, student_award_base, spe_research_award_base], 2)
                   mark+=weight*research_award
                   sub_mark.push(research_award)
                   if(research_award<1) done_must='False'
@@ -1265,32 +1265,32 @@ module.exports=function(req,res,next){
                   // Projects
                   const proj_base=1
                   let proj=await getProject(0)
-                  mark+=weight * proj/proj_base
-                  sub_mark.push(proj/proj_base || 0)
+                  proj = getMark(proj, proj_base)
+                  mark+=weight * proj
+                  sub_mark.push(proj || 0)
 
                   // Income
                   const income_base=120
                   let inc = await getIncome()
-                  mark+=weight * inc/income_base
-                  sub_mark.push(inc/income_base || 0)
+                  inc = getMark(inc, income_base)
+                  mark+=weight * inc
+                  sub_mark.push(inc || 0)
 
                   // Research Award
                   let research_award=0
                   const paper_base=16
-                  let papers=await getPaper()
-                  research_award+=papers/paper_base
+                  let papers=await getPaper({
+                    sci: 2,
+                    ei: 4
+                  })
                   const patent_base=2
                   let patent=await getPatent({min_pos:3})
-                  research_award+=patent/patent_base
                   const book_base=1
                   let book=await getBook({min_pos:3})
-                  research_award+=book/book_base
                   const thesis_award_base=1
                   let thesis_award=await getThesisAward()
-                  research_award+=thesis_award/thesis_award_base
                   const student_award_base=1
                   let student_award=await getStudentAward()
-                  research_award+=student_award/student_award_base
                   const spe_research_award_base=1
                   let spe_research_award=await getResearchAward({
                     0:{
@@ -1304,8 +1304,7 @@ module.exports=function(req,res,next){
                       3:5
                     }
                   })
-                  research_award+=spe_research_award/spe_research_award_base
-                  research_award*=0.5
+                  research_award = getMark([papers, patent, book, thesis_award, student_award, spe_research_award], [paper_base, patent_base, book_base, thesis_award_base, student_award_base, spe_research_award_base], 2)
                   mark+=weight*research_award
                   sub_mark.push(research_award)
                   if(research_award<1) done_must='False'
@@ -1325,26 +1324,28 @@ module.exports=function(req,res,next){
                   // Projects
                   const proj_base=1
                   let proj=await getProject(0)
-                  mark+=weight * proj/proj_base
-                  sub_mark.push(proj/proj_base || 0)
+                  proj = getMark(proj, proj_base)
+                  mark+=weight * proj
+                  sub_mark.push(proj || 0)
 
                   // Income
                   const income_base=75
                   let inc = await getIncome()
-                  mark+=weight * inc/income_base
-                  sub_mark.push(inc/income_base || 0)
+                  inc = getMark(inc, income_base)
+                  mark+=weight * inc
+                  sub_mark.push(inc || 0)
 
                   // Research Award
                   let research_award=0
                   const paper_base=12
-                  let papers=await getPaper()
-                  research_award+=papers/paper_base
+                  let papers=await getPaper({
+                    sci: 2,
+                    ei: 2
+                  })
                   const patent_base=2
                   let patent=await getPatent({min_pos:3})
-                  research_award+=patent/patent_base
                   const student_award_base=1
                   let student_award=await getStudentAward()
-                  research_award+=student_award/student_award_base
                   const spe_research_award_base=1
                   let spe_research_award=await getResearchAward({
                     0:{
@@ -1358,8 +1359,7 @@ module.exports=function(req,res,next){
                       3:6
                     }
                   })
-                  research_award+=spe_research_award/spe_research_award_base
-                  research_award*=0.5
+                  research_award = getMark([papers, patent, student_award, spe_research_award], [paper_base, patent_base, student_award_base, spe_research_award_base]) / 2
                   mark+=weight*research_award
                   sub_mark.push(research_award)
 
@@ -1378,12 +1378,30 @@ module.exports=function(req,res,next){
               people[`I${_row_}`]={t:'s',v:JSON.stringify(done_must)}
               people[`J${_row_}`]={t:'s',v:JSON.stringify(hour_under_32_every_year)}
 
+              function getMark(mark, base, must = 0){
+                let result = 0
+                if(Array.isArray(mark)){
+                  if(mark.length != base.length)
+                    throw 'mark and base must have the same length'
+                  for(let i = 0; i < mark.length; ++i){
+                    let r = mark[i] / base[i]
+                    r = r >= 1 ? r : 0
+                    result += r
+                  }
+                }else{
+                  result = mark / base
+                }
+                if(must)
+                  result = result >= must ? result : 0
+                return result
+              }
+
               function getTeachMark(base){
                 return getUgHours()
                 .then(ug_hours=>{
                   return getPgHours()
                   .then(pg_hours=>{
-                    return (ug_hours+pg_hours)/(3*base*(row.employed_til-row.employed_from)/94521600000)
+                    return getMark(ug_hours + pg_hours, 3 * base * (row.employed_til-row.employed_from)/94521600000)
                   })
                 })
               }
@@ -1414,7 +1432,7 @@ module.exports=function(req,res,next){
                 })
               }
 
-              function getProject(min_lvl){
+              function getProject(min_lvl, base){
                 min_lvl=min_lvl | 0
                 return select('TableProject',[1],`host='${id}' AND started_at >= ${row.employed_from} AND level >= ${min_lvl}`)
                 .then(rows=>{
@@ -1433,16 +1451,28 @@ module.exports=function(req,res,next){
                 })
               }
 
-              function getPaper(){
+              function getPaper(base){
+                if(typeof base.sci === 'undefined')
+                  base.sci = 0
+                if(typeof base.ei === 'undefined')
+                  base.ei = 0
                 return select('TablePaper',['category','magazine'],`host='${row.name}'`)
                 .then(rows=>{
                   let result=0
+                  let sci = 0
+                  let ei = 0
                   rows.forEach(r=>{
-                    if(r.category==2) result+=4
-                    else if(r.category==1) result+=2
-                    else if(r.magazine==2) result+=2
-                    else if(r.magazine==1) result+=1
+                    if(r.category == 2)
+                      ++sci
+                    else if(r.category == 1)
+                      ++ei
+                    else if(r.magazine == 2)
+                      ++ei
                   })
+                  if(sci >= base.sci && ei >= base.ei)
+                    result = 1
+                  else
+                    result = 0
                   return result
                 })
               }
